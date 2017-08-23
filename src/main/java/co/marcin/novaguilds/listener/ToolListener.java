@@ -46,7 +46,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 public class ToolListener extends AbstractListener {
@@ -93,7 +92,28 @@ public class ToolListener extends AbstractListener {
 				return;
 			}
 
-			nPlayer.getPreferences().setRegionMode(nPlayer.getPreferences().getRegionMode() == RegionMode.CHECK ? RegionMode.SELECT : RegionMode.CHECK);
+			RegionMode newRegionMode;
+
+			switch(nPlayer.getPreferences().getRegionMode()) {
+				case CHECK:
+					newRegionMode = RegionMode.SELECT;
+					break;
+				case SELECT:
+					if(Permission.NOVAGUILDS_CAVERSIA_STONEWAGERMODE.has(nPlayer)) {
+						newRegionMode = RegionMode.STONEWAGER;
+					}
+					else {
+						newRegionMode = RegionMode.CHECK;
+					}
+					break;
+				case STONEWAGER:
+				case RESIZE:
+				default:
+					newRegionMode = RegionMode.CHECK;
+					break;
+			}
+
+			nPlayer.getPreferences().setRegionMode(newRegionMode);
 			nPlayer.cancelToolProgress();
 
 			//highlight corners for resizing
@@ -106,7 +126,20 @@ public class ToolListener extends AbstractListener {
 				selectedLocation[1] = nPlayer.getAtRegion().getCorner(1);
 			}
 
-			MessageWrapper mode = nPlayer.getPreferences().getRegionMode() == RegionMode.SELECT ? Message.CHAT_REGION_TOOL_MODES_SELECT : Message.CHAT_REGION_TOOL_MODES_CHECK;
+			MessageWrapper mode;
+
+			switch(nPlayer.getPreferences().getRegionMode()) {
+				case STONEWAGER:
+					mode = Message.CHAT_REGION_TOOL_MODES_STONEWAGER;
+					break;
+				case SELECT:
+					mode = Message.CHAT_REGION_TOOL_MODES_SELECT;
+					break;
+				case CHECK:
+				default:
+					mode = Message.CHAT_REGION_TOOL_MODES_CHECK;
+					break;
+			}
 
 			vars.put(VarKey.MODE, mode.get());
 			Message.CHAT_REGION_TOOL_TOGGLEDMODE.clone().vars(vars).send(nPlayer);
@@ -133,10 +166,29 @@ public class ToolListener extends AbstractListener {
 				Message.CHAT_REGION_BELONGSTO.clone().vars(vars).send(nPlayer);
 			}
 			else {
-				Message.CHAT_REGION_NOREGIONHERE.send(nPlayer);
+				for(NovaRegion siegeRegion : SiegeStoneListener.GUILD.getRegions()) {
+					if(siegeRegion.contains(pointedLocation)) {
+						region = siegeRegion;
+						break;
+					}
+				}
+
+				if(region == null) {
+					Message.CHAT_REGION_NOREGIONHERE.send(nPlayer);
+				}
+				else {
+					Message.CHAT_CAVERSIA_REGION_UNCLAIMED
+						   .setVar(VarKey.NAME, region.getSiegeStone().getName())
+						   .send(player);
+					selectionType = RegionSelection.Type.HIGHLIGHT;
+					selectedLocation[0] = region.getCorner(0);
+					selectedLocation[1] = region.getCorner(1);
+				}
 			}
 		}
-		else if(event.getAction() != Action.PHYSICAL && nPlayer.getPreferences().getRegionMode() != RegionMode.CHECK) { //CREATE MODE
+		else if(event.getAction() != Action.PHYSICAL
+				&& (nPlayer.getPreferences().getRegionMode() == RegionMode.SELECT
+				|| nPlayer.getPreferences().getRegionMode() == RegionMode.RESIZE)) { //CREATE MODE
 			Location pointedCornerLocation = pointedLocation.clone();
 			pointedCornerLocation.setY(0);
 			double[] cornerDistance = new double[]{

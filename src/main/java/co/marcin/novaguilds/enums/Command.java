@@ -74,6 +74,7 @@ import co.marcin.novaguilds.command.admin.region.CommandAdminRegionDelete;
 import co.marcin.novaguilds.command.admin.region.CommandAdminRegionList;
 import co.marcin.novaguilds.command.admin.region.CommandAdminRegionSpectate;
 import co.marcin.novaguilds.command.admin.region.CommandAdminRegionTeleport;
+import co.marcin.novaguilds.command.region.CommandRegionTransfer;
 import co.marcin.novaguilds.command.guild.CommandGuild;
 import co.marcin.novaguilds.command.guild.CommandGuildAbandon;
 import co.marcin.novaguilds.command.guild.CommandGuildAlly;
@@ -202,6 +203,7 @@ public final class Command extends CommandWrapperImpl {
 	public static final CommandWrapper REGION_BUY =                           new Command(CommandRegionBuy.class,                           Permission.NOVAGUILDS_REGION_CREATE,                                     Message.CHAT_USAGE_REGION_BUY,                        Flag.NOCONSOLE              );
 	public static final CommandWrapper REGION_DELETE =                        new Command(CommandRegionDelete.class,                        Permission.NOVAGUILDS_REGION_DELETE,                                     Message.CHAT_USAGE_REGION_DELETE,                     Flag.NOCONSOLE, Flag.CONFIRM);
 	public static final CommandWrapper REGION_ENLARGE =                       new Command(CommandRegionEnlarge.class,                       Permission.NOVAGUILDS_REGION_ENLARGE,                                    Message.CHAT_USAGE_REGION_ENLARGE,                    Flag.NOCONSOLE              );
+	public static final CommandWrapper REGION_TRANSFER =                      new Command(CommandRegionTransfer.class,                      Permission.NOVAGUILDS_REGION_TRANSFER,                                   Message.CHAT_USAGE_REGION_TRANSFER,                   Flag.NOCONSOLE              );
 	public static final CommandWrapper TOOL_GET =                             new Command(CommandToolGet.class,                             Permission.NOVAGUILDS_TOOL_GET,                                          Message.CHAT_USAGE_TOOL,                              Flag.NOCONSOLE              );
 	public static final CommandWrapper PLAYERINFO =                           new Command(CommandPlayerInfo.class,                          Permission.NOVAGUILDS_PLAYERINFO,                          "playerinfo", Message.CHAT_USAGE_PLAYER_INFO                                                    );
 	public static final CommandWrapper NOVAGUILDS =                           new Command(CommandNovaGuilds.class,                          Permission.NOVAGUILDS_NOVAGUILDS,                          "novaguilds"                                                                                    );

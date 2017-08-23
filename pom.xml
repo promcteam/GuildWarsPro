@@ -186,6 +186,18 @@
             <version>2.4</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.gotofinal.darkrise</groupId>
+            <artifactId>spigot-core</artifactId>
+            <version>1.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.gotofinal.darkrise</groupId>
+            <artifactId>economy</artifactId>
+            <version>1.3</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -237,6 +249,21 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <finalName>${project.name}-1.3</finalName>
+                    <outputDirectory>../out</outputDirectory>
+                    <archive>
+                        <manifestEntries>
+                            <Built-By>MarcinWieczorek</Built-By>
+                            <Created-By>MarcinWieczorek</Created-By>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
             </plugin>
         </plugins>
 

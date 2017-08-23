@@ -22,6 +22,7 @@ import co.marcin.novaguilds.api.basic.ConfigWrapper;
 import co.marcin.novaguilds.api.util.reflect.FieldAccessor;
 import co.marcin.novaguilds.impl.basic.ConfigWrapperImpl;
 import co.marcin.novaguilds.util.reflect.Reflections;
+import com.gotofinal.darkrise.economy.Price;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -106,6 +107,8 @@ public abstract class Config {
 	public static ConfigWrapper RAID_ENABLED;
 	public static ConfigWrapper RAID_TIMEREST;
 	public static ConfigWrapper RAID_TIMEINACTIVE;
+	public static ConfigWrapper RAID_MAXDURATION;
+	public static ConfigWrapper RAID_MAXMULTIPLIER;
 	public static ConfigWrapper RAID_MINONLINE;
 	public static ConfigWrapper RAID_POINTSTAKE;
 	public static ConfigWrapper RAID_MULTIPLER;
@@ -164,6 +167,16 @@ public abstract class Config {
 	public static ConfigWrapper TABLIST_TOPROW_PLAYERS_KDR;
 	public static ConfigWrapper TABLIST_TOPROW_GUILDS;
 	public static ConfigWrapper TABLIST_SCHEME;
+	public static ConfigWrapper CAVERSIA_REGION_SMALL_MEMBERS;
+	public static ConfigWrapper CAVERSIA_REGION_SMALL_ITEM;
+	public static ConfigWrapper.Typed<Price> CAVERSIA_REGION_SMALL_PRICE = new ConfigWrapperImpl.Typed<>(Price.class);
+	public static ConfigWrapper CAVERSIA_REGION_SMALL_SIZE;
+	public static ConfigWrapper CAVERSIA_REGION_LARGE_MEMBERS;
+	public static ConfigWrapper CAVERSIA_REGION_LARGE_ITEM;
+	public static ConfigWrapper.Typed<Price> CAVERSIA_REGION_LARGE_PRICE = new ConfigWrapperImpl.Typed<>(Price.class);
+	public static ConfigWrapper CAVERSIA_REGION_LARGE_SIZE;
+	public static ConfigWrapper CAVERSIA_SIEGECOOLDOWN;
+	public static ConfigWrapper CAVERSIA_WARMUP;
 
 	private static final Map<String, ConfigWrapper> wrapperMap = new HashMap<>();
 

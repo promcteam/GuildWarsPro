@@ -92,6 +92,13 @@ public interface NovaRaid {
 	long getInactiveTime();
 
 	/**
+	 * Gets attacked region
+	 *
+	 * @return the region
+	 */
+	NovaRegion getRegion();
+
+	/**
 	 * Sets the attacker guild
 	 *
 	 * @param guild the guild
@@ -140,6 +147,13 @@ public interface NovaRaid {
 	 * @param result boolean
 	 */
 	void setResult(Result result);
+
+	/**
+	 * Sets attacked region
+	 *
+	 * @param region region
+	 */
+	void setRegion(NovaRegion region);
 
 	/**
 	 * Updates inactive time

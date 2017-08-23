@@ -35,6 +35,7 @@ public class CommandRegion extends AbstractCommandExecutor {
 		commandsMap.put("delete", Command.REGION_DELETE);
 		commandsMap.put("del",    Command.REGION_DELETE);
 		commandsMap.put("enlarge",Command.REGION_ENLARGE);
+		commandsMap.put("transfer", Command.REGION_TRANSFER);
 	}
 
 	@Override

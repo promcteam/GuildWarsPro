@@ -44,6 +44,8 @@ public class YamlEnumTest {
 				"gguicmd",
 				"groups",
 				"rank.defaultranks",
+				"caversia.region.small.price",
+				"caversia.region.large.price",
 		};
 	}
 

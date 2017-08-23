@@ -24,7 +24,6 @@ import co.marcin.novaguilds.api.basic.NovaPlayer;
 import co.marcin.novaguilds.api.basic.NovaRaid;
 import co.marcin.novaguilds.api.basic.NovaRank;
 import co.marcin.novaguilds.api.basic.NovaRegion;
-import co.marcin.novaguilds.api.event.RegionDeleteEvent;
 import co.marcin.novaguilds.api.util.IConverter;
 import co.marcin.novaguilds.enums.AbandonCause;
 import co.marcin.novaguilds.enums.Config;
@@ -32,8 +31,8 @@ import co.marcin.novaguilds.impl.util.NonNullArrayList;
 import co.marcin.novaguilds.impl.util.bossbar.BossBarUtils;
 import co.marcin.novaguilds.impl.util.converter.NameToGuildConverterImpl;
 import co.marcin.novaguilds.impl.util.converter.UUIDToGuildConverterImpl;
+import co.marcin.novaguilds.listener.SiegeStoneListener;
 import co.marcin.novaguilds.manager.GuildManager;
-import co.marcin.novaguilds.manager.ListenerManager;
 import co.marcin.novaguilds.manager.RankManager;
 import co.marcin.novaguilds.util.InventoryUtils;
 import co.marcin.novaguilds.util.LoggerUtils;
@@ -878,12 +877,8 @@ public class NovaGuildImpl extends AbstractResource implements NovaGuild {
 
 		//Delete region
 		for(NovaRegion region : new ArrayList<>(getRegions())) {
-			RegionDeleteEvent event = new RegionDeleteEvent(region, RegionDeleteEvent.Cause.fromGuildAbandonCause(cause));
-			ListenerManager.getLoggedPluginManager().callEvent(event);
-
-			if(!event.isCancelled()) {
-				plugin.getRegionManager().remove(region);
-			}
+			removeRegion(region);
+			SiegeStoneListener.GUILD.addRegion(region);
 		}
 
 		//Refresh top holograms

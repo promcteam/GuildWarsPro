@@ -235,6 +235,12 @@ raid:
 # inactive time after which the raid is over      #
  timeinactive: 30s
 
+# Maximum raid duration #
+ maxduration: 5m
+
+# Maximum multiplier #
+ maxmultiplier: 2
+
 # +5% points/money for pvp kill during raid       #
  pvp:
   bonuspercent:
@@ -730,3 +736,22 @@ region:
 # deny riding mobs                                #
  denyriding:
   - HORSE
+
+caversia:
+ region:
+  small:
+   members: 10
+   item: item:id
+   price:
+    currency: MONEY
+    amount: 10000
+   size: 5
+  large:
+   members: 20
+   item: item:id
+   price:
+    currency: MONEY
+    amount: 250000
+   size: 10
+ siegecooldown: 24h
+ warmup: 24h

@@ -60,7 +60,13 @@ public class RunnableRaid implements Runnable {
 
 			if(!raid.getPlayersOccupying().isEmpty()) {
 				//stepping progress
-				raid.addProgress((float) (raid.getPlayersOccupying().size() * Config.RAID_MULTIPLER.getDouble()));
+				float progress = (float) (raid.getPlayersOccupying().size() * Config.RAID_MULTIPLER.getDouble());
+
+				if(progress > Config.RAID_MAXMULTIPLIER.getInt()) {
+					progress = Config.RAID_MAXMULTIPLIER.getInt();
+				}
+
+				raid.addProgress(progress);
 
 				//players raiding, update inactive time
 				raid.updateInactiveTime();
@@ -74,7 +80,7 @@ public class RunnableRaid implements Runnable {
 			vars.put(VarKey.ATTACKER, raid.getGuildAttacker().getName());
 			vars.put(VarKey.DEFENDER, guildDefender.getName());
 
-			if(NumberUtils.systemSeconds() - raid.getInactiveTime() > Config.RAID_TIMEINACTIVE.getSeconds()) {
+			if(NumberUtils.systemSeconds() - raid.getStartTime() > Config.RAID_MAXDURATION.getSeconds()) {
 				raid.setResult(NovaRaid.Result.TIMEOUT);
 			}
 
@@ -106,11 +112,15 @@ public class RunnableRaid implements Runnable {
 						break;
 					case SUCCESS:
 						Message.BROADCAST_GUILD_RAID_FINISHED_ATTACKERWON.clone().vars(vars).broadcast();
-						guildDefender.takeLive();
 						guildDefender.updateTimeRest();
+						raid.getRegion().getSiegeStone().updateLastAttackTime();
 						guildDefender.updateLostLive();
 						guildDefender.takePoints(pointsTake);
 						guildDefender.addPoints(pointsTake);
+
+						//Transfer the region
+						guildDefender.removeRegion(raid.getRegion());
+						raid.getGuildAttacker().addRegion(raid.getRegion());
 						break;
 					case TIMEOUT:
 						Message.BROADCAST_GUILD_RAID_FINISHED_DEFENDERWON.clone().vars(vars).broadcast();

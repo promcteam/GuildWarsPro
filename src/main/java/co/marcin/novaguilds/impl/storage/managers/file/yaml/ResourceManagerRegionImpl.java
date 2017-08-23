@@ -22,6 +22,8 @@ import co.marcin.novaguilds.api.basic.NovaGuild;
 import co.marcin.novaguilds.api.basic.NovaRegion;
 import co.marcin.novaguilds.api.storage.Storage;
 import co.marcin.novaguilds.impl.basic.NovaRegionImpl;
+import co.marcin.novaguilds.impl.basic.SiegeStone;
+import co.marcin.novaguilds.listener.SiegeStoneListener;
 import co.marcin.novaguilds.manager.GuildManager;
 import co.marcin.novaguilds.util.LoggerUtils;
 import org.bukkit.Location;
@@ -75,7 +77,12 @@ public class ResourceManagerRegionImpl extends AbstractYAMLResourceManager<NovaR
 
 			try {
 				String guildUUIDString = configuration.getString("guild", "");
-				guild = GuildManager.getGuild(UUID.fromString(guildUUIDString));
+				UUID guildUUID = UUID.fromString(guildUUIDString);
+				guild = GuildManager.getGuild(guildUUID);
+
+				if(guild == null && guildUUID.equals(SiegeStoneListener.GUILD.getUUID())) {
+					guild = SiegeStoneListener.GUILD;
+				}
 			}
 			catch(IllegalArgumentException e) {
 				guild = GuildManager.getGuildByName(guildName);
@@ -142,6 +149,9 @@ public class ResourceManagerRegionImpl extends AbstractYAMLResourceManager<NovaR
 				regionData.set("corner2.x", region.getCorner(1).getBlockX());
 				regionData.set("corner2.z", region.getCorner(1).getBlockZ());
 
+				//Siege stone
+				plugin.getStorage().getResourceManager(SiegeStone.class).save(region.getSiegeStone());
+
 				//save
 				regionData.save(getFile(region));
 				region.setUnchanged();
@@ -164,6 +174,7 @@ public class ResourceManagerRegionImpl extends AbstractYAMLResourceManager<NovaR
 		}
 
 		if(getFile(region).delete()) {
+			plugin.getStorage().getResourceManager(SiegeStone.class).addToRemovalQueue(region.getSiegeStone());
 			return true;
 		}
 		else {

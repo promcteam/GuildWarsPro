@@ -33,6 +33,7 @@ public class NovaRegionImpl extends AbstractResource implements NovaRegion {
 	private World world;
 	private NovaGuild guild;
 	private Integer index;
+	private final SiegeStone siegeStone;
 
 	/**
 	 * The constructor
@@ -41,6 +42,7 @@ public class NovaRegionImpl extends AbstractResource implements NovaRegion {
 	 */
 	public NovaRegionImpl(UUID uuid) {
 		super(uuid);
+		siegeStone = new SiegeStone(uuid);
 	}
 
 	/**
@@ -116,6 +118,11 @@ public class NovaRegionImpl extends AbstractResource implements NovaRegion {
 	}
 
 	@Override
+	public SiegeStone getSiegeStone() {
+		return siegeStone;
+	}
+
+	@Override
 	public void setWorld(World world) {
 		this.world = world;
 		setChanged();
@@ -168,5 +175,10 @@ public class NovaRegionImpl extends AbstractResource implements NovaRegion {
 
 		return ((x >= c1.getBlockX() && x <= c2.getBlockX()) || (x <= c1.getBlockX() && x >= c2.getBlockX()))
 				&& ((z >= c1.getBlockZ() && z <= c2.getBlockZ()) || (z <= c1.getBlockZ() && z >= c2.getBlockZ()));
+	}
+
+	@Override
+	public boolean isChanged() {
+		return super.isChanged() || getSiegeStone().isChanged();
 	}
 }

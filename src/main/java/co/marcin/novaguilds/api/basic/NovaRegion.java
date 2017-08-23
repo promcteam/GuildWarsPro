@@ -19,6 +19,7 @@
 package co.marcin.novaguilds.api.basic;
 
 import co.marcin.novaguilds.api.storage.Resource;
+import co.marcin.novaguilds.impl.basic.SiegeStone;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -93,6 +94,13 @@ public interface NovaRegion extends Resource {
 	 * @return region index
 	 */
 	Integer getIndex();
+
+	/**
+	 * Gets the siege stone
+	 *
+	 * @return siege stone
+	 */
+	SiegeStone getSiegeStone();
 
 	/**
 	 * Sets the world

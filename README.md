@@ -608,6 +608,10 @@ mvn clean install
             <td>/g rg enlarge [index]</td>
         </tr>
         <tr>
+            <td>novaguilds.region.transfer</td>
+            <td>/g rg transfer <guild> [index]</td>
+        </tr>
+        <tr>
             <td>novaguilds.region.list</td>
             <td>/g rg list</td>
         </tr>
@@ -638,6 +642,18 @@ mvn clean install
         <tr>
             <td>novaguilds.confirm</td>
             <td>/confirm</td>
+        </tr>
+        <tr>
+            <td>novaguilds.caversia.stonewagermode</td>
+            <td>Stone Wager region mode</td>
+        </tr>
+        <tr>
+            <td>novaguilds.caversia.command.access</td>
+            <td>/nga caversia</td>
+        </tr>
+        <tr>
+            <td>novaguilds.caversia.command.rename</td>
+            <td>/nga caversia rename</td>
         </tr>
     </tbody>
 </table>
