@@ -68,8 +68,6 @@ import java.util.UUID;
 
 public class SiegeStoneListener extends AbstractListener {
     private DarkRiseEconomy economy;
-    private DarkRiseItem largeStoneWager;
-    private DarkRiseItem smallStoneWager;
     public static NovaGuild GUILD;
 
     public static final CommandWrapper COMMAND_RENAME = new CommandWrapperImpl();
@@ -82,14 +80,11 @@ public class SiegeStoneListener extends AbstractListener {
             throw new IllegalArgumentException("Could not get Economy instance");
         }
 
-        largeStoneWager = economy.getItems().getItemByIdOrName(Config.CAVERSIA_REGION_LARGE_ITEM.getString());
-        smallStoneWager = economy.getItems().getItemByIdOrName(Config.CAVERSIA_REGION_SMALL_ITEM.getString());
-
-        if(smallStoneWager == null) {
+        if(Config.CAVERSIA_REGION_SMALL_ITEM.get() == null) {
             throw new IllegalArgumentException("Invalid item: " + Config.CAVERSIA_REGION_SMALL_ITEM.getString());
         }
 
-        if(largeStoneWager == null) {
+        if(Config.CAVERSIA_REGION_LARGE_ITEM.get() == null) {
             throw new IllegalArgumentException("Invalid item: " + Config.CAVERSIA_REGION_LARGE_ITEM.getString());
         }
 
@@ -102,6 +97,13 @@ public class SiegeStoneListener extends AbstractListener {
             @Override
             public Price deserialize(ConfigWrapper configWrapper) {
                 return new Price(configWrapper.getMap());
+            }
+        });
+
+        plugin.getConfigManager().registerCustomConfigDeserializer(DarkRiseItem.class, new ConfigManager.CustomConfigDeserializer<DarkRiseItem>() {
+            @Override
+            public DarkRiseItem deserialize(ConfigWrapper configWrapper) {
+                return economy.getItems().getItemByIdOrName(configWrapper.getString());
             }
         });
 
@@ -154,12 +156,12 @@ public class SiegeStoneListener extends AbstractListener {
         Price price;
 
         if(stoneWager == StoneWager.SMALL) {
-            itemRequirement = smallStoneWager;
+            itemRequirement = Config.CAVERSIA_REGION_SMALL_ITEM.get();
             countRequirement = Config.CAVERSIA_REGION_SMALL_MEMBERS.getInt();
             price = Config.CAVERSIA_REGION_SMALL_PRICE.get();
         }
         else {
-            itemRequirement = largeStoneWager;
+            itemRequirement = Config.CAVERSIA_REGION_LARGE_ITEM.get();
             countRequirement = Config.CAVERSIA_REGION_LARGE_MEMBERS.getInt();
             price = Config.CAVERSIA_REGION_LARGE_PRICE.get();
         }
@@ -257,11 +259,11 @@ public class SiegeStoneListener extends AbstractListener {
         StoneWager stoneWager = null;
         int size = 0;
 
-        if(item.equals(smallStoneWager)) {
+        if(item.equals(Config.CAVERSIA_REGION_SMALL_ITEM.get())) {
             stoneWager = StoneWager.SMALL;
             size = Config.CAVERSIA_REGION_SMALL_SIZE.getInt();
         }
-        else if(item.equals(largeStoneWager)) {
+        else if(item.equals(Config.CAVERSIA_REGION_LARGE_ITEM.get())) {
             stoneWager = StoneWager.LARGE;
             size = Config.CAVERSIA_REGION_LARGE_SIZE.getInt();
         }
