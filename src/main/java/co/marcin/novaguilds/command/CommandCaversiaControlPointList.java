@@ -16,39 +16,31 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package co.marcin.novaguilds.command.admin.caversia;
+package co.marcin.novaguilds.command;
 
-import co.marcin.novaguilds.api.basic.CommandWrapper;
 import co.marcin.novaguilds.command.abstractexecutor.AbstractCommandExecutor;
 import co.marcin.novaguilds.enums.Message;
+import co.marcin.novaguilds.enums.VarKey;
+import co.marcin.novaguilds.impl.basic.ControlPoint;
 import co.marcin.novaguilds.listener.ControlPointListener;
-import co.marcin.novaguilds.listener.SiegeStoneListener;
-import co.marcin.novaguilds.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
-public class CommandAdminCaversiaAccess extends AbstractCommandExecutor {
-    public CommandAdminCaversiaAccess() {
-        commandsMap.put("rename", SiegeStoneListener.COMMAND_RENAME);
-        commandsMap.put("controlpoint", ControlPointListener.COMMAND_ACCESS);
-        commandsMap.put("cp", ControlPointListener.COMMAND_ACCESS);
-    }
-
+public class CommandCaversiaControlPointList extends AbstractCommandExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) throws Exception {
-        if(args.length == 0) {
-            for(CommandWrapper commandWrapper : getSubCommands()) {
-                commandWrapper.getUsageMessage().send(sender);
+        Message.CHAT_CAVERSIA_CONTROLPOINT_LIST_HEADER.send(sender);
+
+        for(ControlPoint controlPoint : plugin.getListenerManager().getListener(ControlPointListener.class).getControlPoints()) {
+            if(controlPoint.isOwned() || !controlPoint.isVulnerable()) {
+                continue;
             }
-            return;
+
+            Message.CHAT_CAVERSIA_CONTROLPOINT_LIST_ROW
+                    .setVar(VarKey.NAME, controlPoint.getName())
+                    .setVar(VarKey.X, controlPoint.getLocation().getBlockX())
+                    .setVar(VarKey.Y, controlPoint.getLocation().getBlockY())
+                    .setVar(VarKey.Z, controlPoint.getLocation().getBlockZ())
+                    .send(sender);
         }
-
-        CommandWrapper subCommand = getSubCommand(args);
-
-        if(subCommand == null) {
-            Message.CHAT_UNKNOWNCMD.send(sender);
-            return;
-        }
-
-        subCommand.execute(sender, StringUtils.parseArgs(args, 1));
     }
 }

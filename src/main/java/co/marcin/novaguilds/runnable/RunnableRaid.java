@@ -20,17 +20,22 @@ package co.marcin.novaguilds.runnable;
 
 import co.marcin.novaguilds.NovaGuilds;
 import co.marcin.novaguilds.api.basic.NovaGuild;
+import co.marcin.novaguilds.api.basic.NovaPlayer;
 import co.marcin.novaguilds.api.basic.NovaRaid;
 import co.marcin.novaguilds.api.event.GuildAbandonEvent;
 import co.marcin.novaguilds.enums.AbandonCause;
 import co.marcin.novaguilds.enums.Config;
 import co.marcin.novaguilds.enums.Message;
 import co.marcin.novaguilds.enums.VarKey;
+import co.marcin.novaguilds.impl.basic.ControlPoint;
 import co.marcin.novaguilds.impl.util.bossbar.BossBarUtils;
+import co.marcin.novaguilds.listener.ControlPointListener;
 import co.marcin.novaguilds.manager.ListenerManager;
 import co.marcin.novaguilds.manager.MessageManager;
 import co.marcin.novaguilds.util.LoggerUtils;
 import co.marcin.novaguilds.util.NumberUtils;
+import com.gotofinal.darkrise.economy.DarkRiseItem;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -48,6 +53,7 @@ public class RunnableRaid implements Runnable {
 	@Override
 	public void run() {
 		boolean renewTask = false;
+		ControlPointListener controlPointListener = plugin.getListenerManager().getListener(ControlPointListener.class);
 
 		for(NovaGuild guildDefender : new ArrayList<>(plugin.getGuildManager().getGuilds())) {
 			if(!guildDefender.isRaid()) {
@@ -132,6 +138,120 @@ public class RunnableRaid implements Runnable {
 			}
 
 			raidBar(raid);
+		}
+
+		//Control points
+		for(ControlPoint controlPoint : controlPointListener.getControlPoints()) {
+			if(!controlPoint.isRaid()) {
+				continue;
+			}
+
+			ControlPoint.Raid raid = controlPoint.getRaid();
+			LoggerUtils.debug(String.format("Control points '%s' runnable running. Progress: %f", controlPoint.getName(), raid.getProgress()));
+
+			if(!raid.getPlayersOccupying().isEmpty()) {
+				float progress = (float) (raid.getPlayersOccupying().size() * Config.CAVERSIA_CONTROLPOINT_MULTIPLIER.getDouble());
+
+				if(progress > Config.CAVERSIA_CONTROLPOINT_MAXMULTIPLIER.getInt()) {
+					progress = Config.CAVERSIA_CONTROLPOINT_MAXMULTIPLIER.getInt();
+				}
+
+				raid.addProgress(progress);
+			}
+			else {
+				raid.resetProgress();
+
+				boolean guildAlone = true;
+				List<NovaPlayer> playersInArea = raid.getPlayersInArea();
+
+				if(!playersInArea.isEmpty()) {
+					NovaGuild guild = playersInArea.get(0).getGuild();
+					for(NovaPlayer occupyingPlayer : playersInArea) {
+						if(!occupyingPlayer.hasGuild() || !occupyingPlayer.getGuild().equals(guild)) {
+							guildAlone = false;
+							break;
+						}
+					}
+
+					if(guildAlone && guild != null) {
+						raid.setGuild(guild);
+						LoggerUtils.debug("Raid guild changed to: " + guild.getName());
+					}
+				}
+			}
+
+			if(raid.isProgressFinished()) {
+				raid.setResult(NovaRaid.Result.SUCCESS);
+				controlPoint.updateTakeOverTime();
+				controlPoint.setRaid(null);
+				controlPoint.updateBlock();
+				controlPoint.scheduleSoonVulnerableTask();
+				controlPoint.scheduleVulnerableTask();
+				controlPoint.setOwningGuild(raid.getGuild());
+
+				Message.CHAT_CAVERSIA_CONTROLPOINT_BROADCAST_CAPTURED
+					   .setVar(VarKey.NAME, controlPoint.getName())
+					   .setVar(VarKey.GUILD_NAME, raid.getGuild().getName())
+					   .broadcast();
+
+				final Map<VarKey, String> vars = new HashMap<>();
+				for(NovaPlayer nPlayer : raid.getParticipants()) {
+					if(nPlayer.isOnline()) {
+						continue;
+					}
+
+					vars.clear();
+					vars.put(VarKey.PLAYER_NAME, nPlayer.getName());
+
+					if(raid.getGuild().isMember(nPlayer)) {
+						for(String command : Config.CAVERSIA_CONTROLPOINT_COMMANDS_WINNERS.vars(vars).getStringList()) {
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+						}
+
+						for(Map.Entry<DarkRiseItem, Integer> item : controlPointListener.getRewardsWinners().entrySet()) {
+							nPlayer.getPlayer().getInventory().addItem(item.getKey().getItem(item.getValue()));
+						}
+					}
+					else {
+						for(String command : Config.CAVERSIA_CONTROLPOINT_COMMANDS_LOSERS.vars(vars).getStringList()) {
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+						}
+
+						for(Map.Entry<DarkRiseItem, Integer> item : controlPointListener.getRewardsLosers().entrySet()) {
+							nPlayer.getPlayer().getInventory().addItem(item.getKey().getItem(item.getValue()));
+						}
+					}
+				}
+
+				for(String command : Config.CAVERSIA_CONTROLPOINT_COMMANDS_GLOBAL.getStringList()) {
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+				}
+			}
+			else if(!renewTask) {
+				renewTask = true;
+			}
+
+			for(NovaPlayer participant : raid.getParticipants()) {
+				if(!participant.isOnline()) {
+					continue;
+				}
+
+				if(raid.isProgressFinished()) {
+					BossBarUtils.removeBar(participant.getPlayer());
+				}
+				else {
+					BossBarUtils.setMessage(
+							participant.getPlayer(),
+							Message.CHAT_CAVERSIA_CONTROLPOINT_BROADCAST_BOSSBAR
+									.clone()
+									.setVar(VarKey.GUILD_NAME, raid.getGuild().getName())
+									.setVar(VarKey.TAG, raid.getGuild().getTag())
+									.setVar(VarKey.NAME, controlPoint.getName())
+									.get(),
+							raid.getProgress());
+				}
+				//FIXME only one can be shown :(
+			}
 		}
 
 		if(renewTask && plugin.isEnabled()) {

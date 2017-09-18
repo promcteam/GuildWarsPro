@@ -16,20 +16,20 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package co.marcin.novaguilds.command.admin.caversia;
+package co.marcin.novaguilds.command.admin.caversia.controlpoint;
 
-import co.marcin.novaguilds.api.basic.NovaRegion;
 import co.marcin.novaguilds.command.abstractexecutor.AbstractCommandExecutor;
 import co.marcin.novaguilds.enums.Message;
 import co.marcin.novaguilds.enums.VarKey;
-import co.marcin.novaguilds.listener.SiegeStoneListener;
+import co.marcin.novaguilds.impl.basic.ControlPoint;
+import co.marcin.novaguilds.listener.ControlPointListener;
 import co.marcin.novaguilds.util.CompatibilityUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CommandAdminCaversiaStoneRename extends AbstractCommandExecutor {
+public class CommandAdminCaversiaControlPointRename extends AbstractCommandExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) throws Exception {
         if(args.length == 0) {
@@ -40,28 +40,14 @@ public class CommandAdminCaversiaStoneRename extends AbstractCommandExecutor {
         Block block = CompatibilityUtils.getTargetBlock(player, null, 20);
 
         if(block == null || block.getType() == Material.AIR) {
-            Message.CHAT_REGION_NOREGIONHERE.send(sender);
+            Message.CHAT_CAVERSIA_CONTROLPOINT_INVALID.send(sender);
             return;
         }
 
-        NovaRegion region = null;
+        ControlPoint controlPoint = plugin.getListenerManager().getListener(ControlPointListener.class).getControlPoint(block.getLocation());
 
-        for(NovaRegion siegeRegion : SiegeStoneListener.GUILD.getRegions()) {
-            if(siegeRegion.getSiegeStone().getBlock().equals(block)) {
-                region = siegeRegion;
-            }
-        }
-
-        if(region == null) {
-            for(NovaRegion guildRegion : plugin.getRegionManager().getRegions()) {
-                if(guildRegion.getSiegeStone().getBlock().equals(block)) {
-                    region = guildRegion;
-                }
-            }
-        }
-
-        if(region == null) {
-            Message.CHAT_REGION_NOREGIONHERE.send(sender);
+        if(controlPoint == null) {
+            Message.CHAT_CAVERSIA_CONTROLPOINT_INVALID.send(sender);
             return;
         }
 
@@ -71,7 +57,7 @@ public class CommandAdminCaversiaStoneRename extends AbstractCommandExecutor {
             Message.CHAT_INVALIDPARAM.send(sender);
         }
 
-        region.getSiegeStone().setName(name);
-        Message.CHAT_CAVERSIA_REGION_RENAMED.setVar(VarKey.NAME, region.getSiegeStone().getName()).send(sender);
+        controlPoint.setName(name);
+        Message.CHAT_CAVERSIA_CONTROLPOINT_RENAMED.setVar(VarKey.NAME, controlPoint.getName()).send(sender);
     }
 }

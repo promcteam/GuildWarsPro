@@ -16,21 +16,18 @@
  *     along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package co.marcin.novaguilds.command.admin.caversia;
+package co.marcin.novaguilds.command.admin.caversia.controlpoint;
 
 import co.marcin.novaguilds.api.basic.CommandWrapper;
 import co.marcin.novaguilds.command.abstractexecutor.AbstractCommandExecutor;
 import co.marcin.novaguilds.enums.Message;
 import co.marcin.novaguilds.listener.ControlPointListener;
-import co.marcin.novaguilds.listener.SiegeStoneListener;
 import co.marcin.novaguilds.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
-public class CommandAdminCaversiaAccess extends AbstractCommandExecutor {
-    public CommandAdminCaversiaAccess() {
-        commandsMap.put("rename", SiegeStoneListener.COMMAND_RENAME);
-        commandsMap.put("controlpoint", ControlPointListener.COMMAND_ACCESS);
-        commandsMap.put("cp", ControlPointListener.COMMAND_ACCESS);
+public class CommandAdminCaversiaControlPointAccess extends AbstractCommandExecutor {
+    public CommandAdminCaversiaControlPointAccess() {
+        commandsMap.put("rename", ControlPointListener.COMMAND_RENAME);
     }
 
     @Override
@@ -39,6 +36,7 @@ public class CommandAdminCaversiaAccess extends AbstractCommandExecutor {
             for(CommandWrapper commandWrapper : getSubCommands()) {
                 commandWrapper.getUsageMessage().send(sender);
             }
+
             return;
         }
 

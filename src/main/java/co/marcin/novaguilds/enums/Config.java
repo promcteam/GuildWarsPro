@@ -178,6 +178,20 @@ public abstract class Config {
 	public static ConfigWrapper CAVERSIA_REGION_LARGE_SIZE;
 	public static ConfigWrapper CAVERSIA_SIEGECOOLDOWN;
 	public static ConfigWrapper CAVERSIA_WARMUP;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_BLOCK_VULNERABLE;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_BLOCK_NONVULNERABLE;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_RADIUS;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_MULTIPLIER;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_MAXMULTIPLIER;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_COOLDOWN;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_VULNERABLENOTIFY;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_COMMANDS_WINNERS;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_COMMANDS_LOSERS;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_COMMANDS_GLOBAL;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_REWARDS_WINNERS;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_REWARDS_LOSERS;
+	public static ConfigWrapper CAVERSIA_CONTROLPOINT_FIREWORKS;
+	public static ConfigWrapper.Typed<Price> CAVERSIA_CONTROLPOINT_MONEY = new ConfigWrapperImpl.Typed<>(Price.class);
 
 	private static final Map<String, ConfigWrapper> wrapperMap = new HashMap<>();
 

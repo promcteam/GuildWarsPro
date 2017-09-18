@@ -21,6 +21,7 @@ package co.marcin.novaguilds.manager;
 import co.marcin.novaguilds.impl.util.logging.LoggedPluginManager;
 import co.marcin.novaguilds.listener.ChatListener;
 import co.marcin.novaguilds.listener.ChestGUIListener;
+import co.marcin.novaguilds.listener.ControlPointListener;
 import co.marcin.novaguilds.listener.DeathListener;
 import co.marcin.novaguilds.listener.LoginListener;
 import co.marcin.novaguilds.listener.MoveListener;
@@ -66,6 +67,7 @@ public class ListenerManager {
 		new PlayerInfoListener();
 		new ChestGUIListener();
 		new SiegeStoneListener();
+		new ControlPointListener();
 		packetListener = new PacketListener();
 	}
 

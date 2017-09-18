@@ -22,5 +22,6 @@ public enum RegionMode {
 	CHECK,
 	SELECT,
 	RESIZE,
-	STONEWAGER
+	STONEWAGER,
+	CONTROLPOINT,
 }

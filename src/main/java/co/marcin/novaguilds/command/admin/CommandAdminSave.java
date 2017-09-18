@@ -20,6 +20,7 @@ package co.marcin.novaguilds.command.admin;
 
 import co.marcin.novaguilds.command.abstractexecutor.AbstractCommandExecutor;
 import co.marcin.novaguilds.enums.Message;
+import co.marcin.novaguilds.listener.ControlPointListener;
 import co.marcin.novaguilds.util.LoggerUtils;
 import org.bukkit.command.CommandSender;
 
@@ -58,6 +59,7 @@ public class CommandAdminSave extends AbstractCommandExecutor {
 			plugin.getGuildManager().save();
 			plugin.getPlayerManager().save();
 			plugin.getRankManager().save();
+			plugin.getListenerManager().getListener(ControlPointListener.class).save();
 			Message.CHAT_ADMIN_SAVE_ALL.send(sender);
 			LoggerUtils.info("Saved all data");
 		}

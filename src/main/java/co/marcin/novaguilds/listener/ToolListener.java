@@ -107,6 +107,13 @@ public class ToolListener extends AbstractListener {
 					}
 					break;
 				case STONEWAGER:
+					if(Permission.NOVAGUILDS_CAVERSIA_STONEWAGERMODE.has(nPlayer)) {
+						newRegionMode = RegionMode.CONTROLPOINT;
+					}
+					else {
+						newRegionMode = RegionMode.CHECK;
+					}
+					break;
 				case RESIZE:
 				default:
 					newRegionMode = RegionMode.CHECK;
@@ -134,6 +141,9 @@ public class ToolListener extends AbstractListener {
 					break;
 				case SELECT:
 					mode = Message.CHAT_REGION_TOOL_MODES_SELECT;
+					break;
+				case CONTROLPOINT:
+					mode = Message.CHAT_REGION_TOOL_MODES_CONTROLPOINT;
 					break;
 				case CHECK:
 				default:

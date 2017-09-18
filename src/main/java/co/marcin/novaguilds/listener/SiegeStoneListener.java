@@ -67,32 +67,29 @@ import java.util.Collections;
 import java.util.UUID;
 
 public class SiegeStoneListener extends AbstractListener {
-    private DarkRiseEconomy economy;
+    public final DarkRiseEconomy CAVERSIA_ECONOMY;
     public static NovaGuild GUILD;
 
     public static final CommandWrapper COMMAND_RENAME = new CommandWrapperImpl();
     public static final CommandWrapper COMMAND_ACCESS = new CommandWrapperImpl();
 
-    public void init() {
-        economy = plugin.getDependencyManager().get(Dependency.DARKRISE_ECONOMY, DarkRiseEconomy.class);
+    public SiegeStoneListener() {
+        super();
+        CAVERSIA_ECONOMY = plugin.getDependencyManager().get(Dependency.DARKRISE_ECONOMY, DarkRiseEconomy.class);
 
-        if(economy == null) {
+        if(CAVERSIA_ECONOMY == null) {
             throw new IllegalArgumentException("Could not get Economy instance");
         }
+    }
 
-        if(Config.CAVERSIA_REGION_SMALL_ITEM.get() == null) {
-            throw new IllegalArgumentException("Invalid item: " + Config.CAVERSIA_REGION_SMALL_ITEM.getString());
-        }
-
-        if(Config.CAVERSIA_REGION_LARGE_ITEM.get() == null) {
-            throw new IllegalArgumentException("Invalid item: " + Config.CAVERSIA_REGION_LARGE_ITEM.getString());
-        }
+    public void init() {
 
         GUILD = new NovaGuildImpl(UUID.fromString("0146f976-990b-4c38-9f7f-575def2155fc")); //Fixed UUID
         GUILD.setName("NoGuild");
         GUILD.updateInactiveTime();
         plugin.getGuildManager().add(GUILD);
 
+        //Deserializers
         plugin.getConfigManager().registerCustomConfigDeserializer(Price.class, new ConfigManager.CustomConfigDeserializer<Price>() {
             @Override
             public Price deserialize(ConfigWrapper configWrapper) {
@@ -103,10 +100,20 @@ public class SiegeStoneListener extends AbstractListener {
         plugin.getConfigManager().registerCustomConfigDeserializer(DarkRiseItem.class, new ConfigManager.CustomConfigDeserializer<DarkRiseItem>() {
             @Override
             public DarkRiseItem deserialize(ConfigWrapper configWrapper) {
-                return economy.getItems().getItemByIdOrName(configWrapper.getString());
+                return CAVERSIA_ECONOMY.getItems().getItemByIdOrName(configWrapper.getString());
             }
         });
 
+        //Items
+        if(Config.CAVERSIA_REGION_SMALL_ITEM.get() == null) {
+            throw new IllegalArgumentException("Invalid item: " + Config.CAVERSIA_REGION_SMALL_ITEM.getString());
+        }
+
+        if(Config.CAVERSIA_REGION_LARGE_ITEM.get() == null) {
+            throw new IllegalArgumentException("Invalid item: " + Config.CAVERSIA_REGION_LARGE_ITEM.getString());
+        }
+
+        //Commands
         COMMAND_RENAME.setFlags(CommandWrapper.Flag.NOCONSOLE);
         COMMAND_RENAME.setName("CAVERSIA_RENAME");
         COMMAND_RENAME.setUsageMessage(Message.CHAT_USAGE_NGA_CAVERSIA_RENAME);
@@ -247,7 +254,7 @@ public class SiegeStoneListener extends AbstractListener {
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
-        DarkRiseItem item = economy.getItems().getItemByStack(event.getItemInHand());
+        DarkRiseItem item = CAVERSIA_ECONOMY.getItems().getItemByStack(event.getItemInHand());
         NovaPlayer nPlayer = PlayerManager.getPlayer(event.getPlayer());
 
         if(item == null

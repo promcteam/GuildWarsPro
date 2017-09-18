@@ -755,3 +755,29 @@ caversia:
    size: 10
  siegecooldown: 24h
  warmup: 24h
+ controlpoint:
+   block:
+    vulnerable: "STAINED_GLASS:14"
+    nonvulnerable: "STAINED_GLASS:11"
+   radius: 10
+   vulnerablenotify: 2s
+   multiplier: 20
+   maxmultiplier: 20
+   cooldown: 15s
+   commands:
+    winners: []
+    losers: []
+    global: []
+   rewards:
+    winners: []
+    losers: []
+   fireworks:
+   - TYPE: firework
+     power: 2
+     effects:
+     - type: BALL
+       trail: false
+       flicker: true
+       colors: [ffff]
+       fadeColors: []
+   money: 0

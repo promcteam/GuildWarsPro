@@ -212,6 +212,10 @@ chat:
    caversia:
     access: "&4&l> &7/nga &ccaversia &2- &6Caversia commands"
     rename: "&4&l> &7/nga &ccaversia &crename &6<&cname&6> &2- &6Rename a region"
+    controlpoint:
+     access: "&4&l> &7/nga &ccaversia &ccontrolpoint &2- &6Control point commands"
+     rename: "&4&l> &7/nga &ccaversia &ccontrolpoint &crename &6<&cname&6> &2- &6Rename a control point"
+     list: "&4&l> &7/g &cp &2- &6List vulnerable control points"
   guild:
    access: "&4&l> &7/g &2- &6Guild commands"
    abandon: "&4&l> &7/abandon &2- &6abandon your guild"
@@ -312,6 +316,7 @@ chat:
     - "&4&l> &7/g &crank &2- &6rank commands"
     - "{ABANDON}&4&l> &7/abandon &2- &6abandon your guild"
     - "{INVITE}&4&l> &7/invite &6<&cplayer&6> &2- &6invite player to your guild"
+    - "&4&l> &7/g &cp &2- &6List vulnerable control points"
 
  pvp:
   team: "You cannot hurt your teammates"
@@ -513,6 +518,7 @@ chat:
     check: "Check Mode"
     select: "Select Mode"
     stonewager: "Stone Wager"
+    controlpoint: "Control Point"
   
  createguild:
   disabledworld: "Guilds are disabled in this world."
@@ -580,6 +586,30 @@ chat:
  caversia:
   nosiegestone: "You need a Siege Stone to claim or initiate a war for &a{NAME}"
   notenoughmembers: "You need \"{AMOUNT}\" amount of Guild members to claim this &a{NAME}"
+  controlpoint:
+   invalid: "Could not find the control point"
+   renamed: "You renamed the control point to &a{NAME}"
+   created: "Control point created!"
+   broadcast:
+    soonvulnerable: "{NAME} will be vulnerable in {TIME}"
+    vulnerable: "{NAME} is now vulnerable"
+    captured: "{GUILD_NAME} has captured {NAME}"
+    bossbar: "{GUILD_NAME} is raiding control point: {NAME}"
+   list:
+    header: "Vulnerable control points"
+    row: "{NAME}"
+   description:
+    owned:
+     'yes': "Owning Guild: {GUILD_NAME}"
+     'no': "Not owned"
+    vulnerable:
+     'yes': "Vulnerable"
+     'no': "Not vulnerable for: {TIME}"
+    pattern:
+     - "Control Point"
+     - "Name {NAME}"
+     - "{TAG1}"
+     - "{TAG2}"
   region:
    claimed: "You successfully claimed this &a{NAME}"
    renamed: "You renamed the region to &a{NAME}"

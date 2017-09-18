@@ -655,5 +655,17 @@ mvn clean install
             <td>novaguilds.caversia.command.rename</td>
             <td>/nga caversia rename</td>
         </tr>
+        <tr>
+            <td>novaguilds.caversia.command.controlpoint.access</td>
+            <td>/nga caversia controlpoint</td>
+        </tr>
+        <tr>
+            <td>novaguilds.caversia.command.controlpoint.rename</td>
+            <td>/nga caversia controlpoint rename</td>
+        </tr>
+        <tr>
+            <td>novaguilds.caversia.command.controlpoint.list</td>
+            <td>/g cp</td>
+        </tr>
     </tbody>
 </table>

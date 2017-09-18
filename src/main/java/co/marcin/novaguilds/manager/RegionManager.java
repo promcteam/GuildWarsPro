@@ -489,41 +489,18 @@ public class RegionManager {
 	 * @param nPlayer the initiator
 	 */
 	public void checkRaidInit(NovaPlayer nPlayer) {
-		if(!Config.RAID_ENABLED.getBoolean() || !nPlayer.hasGuild() || !nPlayer.isAtRegion()) {
+		if(!Config.RAID_ENABLED.getBoolean() || !nPlayer.hasGuild()) {
 			return;
 		}
 
 		NovaRegion region = nPlayer.getAtRegion();
 		NovaGuild guildDefender = region.getGuild();
 
-		if(nPlayer.getGuild().isWarWith(guildDefender)) {
-			if(guildDefender.isRaid()) {
-				nPlayer.setPartRaid(guildDefender.getRaid());
-				guildDefender.getRaid().addPlayerOccupying(nPlayer);
-			}
-			else {
-//				if(region.getSiegeStone().isVulnerable()) {
-//					if(guildDefender.getOnlinePlayers().size() >= Config.RAID_MINONLINE.getInt() || guildDefender.getOnlinePlayers().size() == guildDefender.getPlayers().size()) {
-//						if(NumberUtils.systemSeconds() - guildDefender.getTimeCreated() > Config.GUILD_CREATEPROTECTION.getSeconds()) {
-//							guildDefender.createRaid(nPlayer.getGuild());
-//							guildDefender.getRaid().setRegion(region);
-//							guildDefender.getRaid().addPlayerOccupying(nPlayer);
-//
-//							if(!RunnableRaid.isRaidRunnableRunning()) {
-//								new RunnableRaid().schedule();
-//							}
-//						}
-//						else {
-//							Message.CHAT_RAID_PROTECTION.send(nPlayer);
-//						}
-//					}
-//				}
-//				else {
-//					final long timeWait = Config.RAID_TIMEREST.getSeconds() - (NumberUtils.systemSeconds() - guildDefender.getTimeRest());
-//
-//					Message.CHAT_RAID_RESTING.clone().setVar(VarKey.GUILD_TIME_REST, StringUtils.secondsToString(timeWait)).send(nPlayer);
-//				}
-			}
+		if(nPlayer.getGuild().isWarWith(guildDefender)
+				&& nPlayer.isAtRegion()
+				&& guildDefender.isRaid()) {
+			nPlayer.setPartRaid(guildDefender.getRaid());
+			guildDefender.getRaid().addPlayerOccupying(nPlayer);
 		}
 	}
 

@@ -305,6 +305,7 @@ public abstract class Message {
 	public static MessageWrapper CHAT_REGION_TOOL_MODES_CHECK;
 	public static MessageWrapper CHAT_REGION_TOOL_MODES_SELECT;
 	public static MessageWrapper CHAT_REGION_TOOL_MODES_STONEWAGER;
+	public static MessageWrapper CHAT_REGION_TOOL_MODES_CONTROLPOINT;
 	public static MessageWrapper CHAT_REGION_BLOCKEDCMD;
 	public static MessageWrapper CHAT_REGION_DELETED;
 
@@ -366,6 +367,9 @@ public abstract class Message {
 
 	public static MessageWrapper CHAT_USAGE_NGA_CAVERSIA_ACCESS;
 	public static MessageWrapper CHAT_USAGE_NGA_CAVERSIA_RENAME;
+	public static MessageWrapper CHAT_USAGE_NGA_CAVERSIA_CONTROLPOINT_ACCESS;
+	public static MessageWrapper CHAT_USAGE_NGA_CAVERSIA_CONTROLPOINT_RENAME;
+	public static MessageWrapper CHAT_USAGE_NGA_CAVERSIA_CONTROLPOINT_LIST;
 
 	public static MessageWrapper CHAT_USAGE_GUILD_ABANDON;
 	public static MessageWrapper CHAT_USAGE_GUILD_ALLY;
@@ -454,6 +458,20 @@ public abstract class Message {
 	public static MessageWrapper CHAT_CAVERSIA_REGION_RENAMED;
 	public static MessageWrapper CHAT_CAVERSIA_REGION_CREATED;
 	public static MessageWrapper CHAT_CAVERSIA_REGION_UNCLAIMED;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_INVALID;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_RENAMED;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_CREATED;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_BROADCAST_SOONVULNERABLE;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_BROADCAST_VULNERABLE;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_BROADCAST_CAPTURED;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_BROADCAST_BOSSBAR = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX, MessageWrapper.Flag.NOAFTERVARCOLOR);
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_LIST_HEADER;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_LIST_ROW;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_DESCRIPTION_OWNED_YES;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_DESCRIPTION_OWNED_NO;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_DESCRIPTION_VULNERABLE_YES;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_DESCRIPTION_VULNERABLE_NO;
+	public static MessageWrapper CHAT_CAVERSIA_CONTROLPOINT_DESCRIPTION_PATTERN = new MessageWrapperImpl(MessageWrapper.Flag.LIST);
 	public static MessageWrapper CHAT_CAVERSIA_GUI_REGIONINFO_TITLE = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
 	public static MessageWrapper CHAT_CAVERSIA_GUI_REGIONINFO_NAME = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
 	public static MessageWrapper CHAT_CAVERSIA_GUI_REGIONINFO_OWNED_YES = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
