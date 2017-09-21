@@ -25,6 +25,7 @@ import co.marcin.novaguilds.runnable.RunnableInactiveCleaner;
 import co.marcin.novaguilds.runnable.RunnableLiveRegeneration;
 import co.marcin.novaguilds.runnable.RunnableRefreshHolograms;
 import co.marcin.novaguilds.runnable.RunnableRefreshTabList;
+import co.marcin.novaguilds.runnable.RunnableUpkeepFee;
 import co.marcin.novaguilds.util.LoggerUtils;
 
 import java.util.HashMap;
@@ -43,7 +44,9 @@ public class TaskManager {
 		LIVEREGENERATION(null, RunnableLiveRegeneration.class, Config.LIVEREGENERATION_TASKINTERVAL),
 		CLEANUP(Config.CLEANUP_ENABLED, RunnableInactiveCleaner.class, Config.CLEANUP_STARTUPDELAY, Config.CLEANUP_INTERVAL),
 		HOLOGRAM_REFRESH(Config.HOLOGRAPHICDISPLAYS_ENABLED, RunnableRefreshHolograms.class, Config.HOLOGRAPHICDISPLAYS_REFRESH),
-		TABLIST_REFRESH(Config.TABLIST_ENABLED, RunnableRefreshTabList.class, Config.TABLIST_REFRESH);
+		TABLIST_REFRESH(Config.TABLIST_ENABLED, RunnableRefreshTabList.class, Config.TABLIST_REFRESH),
+		UPKEEPFEE(null, RunnableUpkeepFee.class, Config.CAVERSIA_UPKEEP_TASK_START, Config.CAVERSIA_UPKEEP_TASK_INTERVAL),
+		;
 
 		private final ConfigWrapper start;
 		private final ConfigWrapper interval;

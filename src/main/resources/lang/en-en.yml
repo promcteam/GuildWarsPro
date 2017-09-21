@@ -610,6 +610,8 @@ chat:
      - "Name {NAME}"
      - "{TAG1}"
      - "{TAG2}"
+  upkeep:
+   paid: "You paid x{AMOUNT} {ITEMNAME} as a fee"
   region:
    claimed: "You successfully claimed this &a{NAME}"
    renamed: "You renamed the region to &a{NAME}"
@@ -629,6 +631,13 @@ chat:
      - "Region Name: {NAME}"
      - "{TAG1}"
      - "{TAG2}"
+   upkeep:
+    name: "Upkeep fees"
+    lore:
+     - "Click the icon to pay the fee"
+     - "Past due: {AMOUNT}"
+     - "Total due: {COUNT}"
+     - "Days left to disband the region: {TIME}"
    warmup:
     name: "Start warmup"
     started: "Warmup has been started"

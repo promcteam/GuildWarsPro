@@ -454,6 +454,7 @@ public abstract class Message {
 
 	public static MessageWrapper CHAT_CAVERSIA_NOSIEGESTONE;
 	public static MessageWrapper CHAT_CAVERSIA_NOTENOUGHMEMBERS;
+	public static MessageWrapper CHAT_CAVERSIA_UPKEEP_PAID;
 	public static MessageWrapper CHAT_CAVERSIA_REGION_CLAIMED;
 	public static MessageWrapper CHAT_CAVERSIA_REGION_RENAMED;
 	public static MessageWrapper CHAT_CAVERSIA_REGION_CREATED;
@@ -479,6 +480,8 @@ public abstract class Message {
 	public static MessageWrapper CHAT_CAVERSIA_GUI_REGIONINFO_VULNERABLE_YES = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
 	public static MessageWrapper CHAT_CAVERSIA_GUI_REGIONINFO_VULNERABLE_NO = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
 	public static MessageWrapper CHAT_CAVERSIA_GUI_REGIONINFO_LORE = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
+	public static MessageWrapper CHAT_CAVERSIA_GUI_UPKEEP_NAME = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
+	public static MessageWrapper CHAT_CAVERSIA_GUI_UPKEEP_LORE = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
 	public static MessageWrapper CHAT_CAVERSIA_GUI_WARMUP_NAME = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
 	public static MessageWrapper CHAT_CAVERSIA_GUI_WARMUP_STARTED;
 

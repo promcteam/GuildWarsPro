@@ -189,13 +189,13 @@
         <dependency>
             <groupId>com.gotofinal.darkrise</groupId>
             <artifactId>spigot-core</artifactId>
-            <version>1.3</version>
+            <version>LATEST</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.gotofinal.darkrise</groupId>
             <artifactId>economy</artifactId>
-            <version>1.3</version>
+            <version>LATEST</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

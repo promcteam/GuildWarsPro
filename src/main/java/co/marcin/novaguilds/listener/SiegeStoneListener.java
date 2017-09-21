@@ -38,6 +38,7 @@ import co.marcin.novaguilds.enums.VarKey;
 import co.marcin.novaguilds.impl.basic.CommandWrapperImpl;
 import co.marcin.novaguilds.impl.basic.NovaGuildImpl;
 import co.marcin.novaguilds.impl.basic.NovaRegionImpl;
+import co.marcin.novaguilds.impl.basic.SiegeStone;
 import co.marcin.novaguilds.impl.util.AbstractGUIInventory;
 import co.marcin.novaguilds.impl.util.AbstractListener;
 import co.marcin.novaguilds.impl.util.RegionSelectionImpl;
@@ -64,7 +65,9 @@ import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class SiegeStoneListener extends AbstractListener {
     public final DarkRiseEconomy CAVERSIA_ECONOMY;
@@ -128,19 +131,13 @@ public class SiegeStoneListener extends AbstractListener {
     }
 
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    public void onPlayerInteract(final PlayerInteractEvent event) {
         if(event.getAction() != Action.RIGHT_CLICK_BLOCK
                 || event.getHand() != EquipmentSlot.HAND) {
             return;
         }
 
         final NovaPlayer nPlayer = PlayerManager.getPlayer(event.getPlayer());
-
-        if(!nPlayer.hasGuild()) {
-            Message.CHAT_GUILD_NOTINGUILD.send(nPlayer);
-            return;
-        }
-
         NovaRegion region = RegionManager.get(event.getClickedBlock());
 
         if(region == null) {
@@ -154,6 +151,11 @@ public class SiegeStoneListener extends AbstractListener {
 
         if(region == null
                 || !event.getClickedBlock().equals(region.getSiegeStone().getBlock())) {
+            return;
+        }
+
+        if(!nPlayer.hasGuild()) {
+            Message.CHAT_GUILD_NOTINGUILD.send(nPlayer);
             return;
         }
 
@@ -208,6 +210,7 @@ public class SiegeStoneListener extends AbstractListener {
                 bannerMeta.setDisplayName(Message.CHAT_CAVERSIA_GUI_REGIONINFO_NAME.get());
                 bannerItem.setItemMeta(bannerMeta);
                 ItemStack warmupItem = bannerItem.clone();
+                final ItemStack upkeepFeeItem = bannerItem.clone();
                 MessageWrapper ownedMessage, vulnerableMessage;
 
                 ownedMessage = finalRegion.getGuild().equals(GUILD)
@@ -248,6 +251,48 @@ public class SiegeStoneListener extends AbstractListener {
                         }
                     });
                 }
+
+                //Upkeep Fee
+                ItemMeta upkeepFeeMeta = upkeepFeeItem.getItemMeta();
+                SiegeStone.UpkeepFeeWorker worker = new SiegeStone.UpkeepFeeWorker(finalRegion.getSiegeStone());
+                upkeepFeeMeta.setDisplayName(Message.CHAT_CAVERSIA_GUI_UPKEEP_NAME.get());
+                List<String> lore = Message.CHAT_CAVERSIA_GUI_UPKEEP_LORE
+                                           .setVar(VarKey.AMOUNT, worker.getDue())
+                                           .setVar(VarKey.COUNT, worker.getTotalDue())
+                                           .setVar(VarKey.TIME, worker.getTimeToDisband() == 0
+                                                   ? "NEVER"
+                                                   : StringUtils.secondsToString(worker.getTimeToDisband(), TimeUnit.DAYS))
+                                           .getList();
+
+                for(int i = 0; i < lore.size(); i++) {
+                    if(worker.getTimeToDisband() == 0 && lore.get(i).contains("NEVER")) {
+                        lore.remove(i);
+                    }
+                }
+
+                upkeepFeeMeta.setLore(lore);
+                upkeepFeeItem.setItemMeta(upkeepFeeMeta);
+                registerAndAdd(new Executor(upkeepFeeItem) {
+                    @Override
+                    public void execute() {
+                        for(SiegeStone.UpkeepFee upkeepFee : finalRegion.getSiegeStone().getUpkeepFees()) {
+                            if(upkeepFee.isPaid()) {
+                                continue;
+                            }
+
+                            if(InventoryUtils.containsAtLeast(event.getPlayer().getInventory(), upkeepFee.getItem().getItem(), upkeepFee.getAmount())) {
+                                InventoryUtils.removeItems(event.getPlayer(), Collections.singletonList(upkeepFee.getItem().getItem(upkeepFee.getAmount())));
+                                upkeepFee.setPaid();
+                                Message.CHAT_CAVERSIA_UPKEEP_PAID
+                                       .setVar(VarKey.AMOUNT, upkeepFee.getAmount())
+                                       .setVar(VarKey.ITEMNAME, upkeepFee.getItem().getItem().getItemMeta().getDisplayName())
+                                       .send(nPlayer);
+                                regenerate();
+                                reopen();
+                            }
+                        }
+                    }
+                });
             }
         }.open(nPlayer);
     }

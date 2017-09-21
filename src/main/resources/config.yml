@@ -755,6 +755,14 @@ caversia:
    size: 10
  siegecooldown: 24h
  warmup: 24h
+ upkeep:
+  timeout: 30d
+  item: ironore
+  amount: 1
+  time: 1d
+  task:
+   interval: 24h
+   start: 10s
  controlpoint:
    block:
     vulnerable: "STAINED_GLASS:14"
@@ -778,6 +786,6 @@ caversia:
      - type: BALL
        trail: false
        flicker: true
-       colors: [ffff]
+       colors: [FFFFFF]
        fadeColors: []
    money: 0

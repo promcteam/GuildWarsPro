@@ -18,17 +18,27 @@
 
 package co.marcin.novaguilds.impl.basic;
 
+import co.marcin.novaguilds.NovaGuilds;
 import co.marcin.novaguilds.api.basic.NovaGuild;
 import co.marcin.novaguilds.enums.Config;
 import co.marcin.novaguilds.enums.StoneWager;
+import co.marcin.novaguilds.impl.util.AbstractChangeable;
+import co.marcin.novaguilds.listener.SiegeStoneListener;
 import co.marcin.novaguilds.manager.GuildManager;
 import co.marcin.novaguilds.util.NumberUtils;
+import com.gotofinal.darkrise.economy.DarkRiseItem;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.jsoup.helper.Validate;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -105,11 +115,244 @@ public class SiegeStone extends AbstractResource implements ConfigurationSeriali
         }
     }
 
+    public static class UpkeepFeeWorker {
+        private final SiegeStone siegeStone;
+
+        public UpkeepFeeWorker(SiegeStone siegeStone) {
+            this.siegeStone = siegeStone;
+        }
+
+        public int getDue() {
+            int amount = 0;
+
+            for(UpkeepFee upkeepFee : siegeStone.getUpkeepFees()) {
+                if(upkeepFee.isPaid()
+                        || NumberUtils.systemSeconds() - upkeepFee.getTimeCreated() < Config.CAVERSIA_UPKEEP_TIME.getSeconds()) {
+                    continue;
+                }
+
+                amount += upkeepFee.getAmount();
+            }
+
+            return amount;
+        }
+
+        public int getTotalDue() {
+            int total = 0;
+
+            for(UpkeepFee upkeepFee : siegeStone.getUpkeepFees()) {
+                if(upkeepFee.isPaid()) {
+                    continue;
+                }
+
+                total += upkeepFee.getAmount();
+            }
+
+            return total;
+        }
+
+        public int getTimeToDisband() {
+            List<UpkeepFee> list = new ArrayList<>();
+
+            for(UpkeepFee upkeepFee : siegeStone.getUpkeepFees()) {
+                if(upkeepFee.isPaid()) {
+                    continue;
+                }
+
+                list.add(upkeepFee);
+            }
+
+            if(list.isEmpty()) {
+                return 0;
+            }
+
+            Collections.sort(list, new Comparator<UpkeepFee>() {
+                @Override
+                public int compare(UpkeepFee o1, UpkeepFee o2) {
+                    return o1.getTimeCreated() - o2.getTimeCreated();
+                }
+            });
+
+            UpkeepFee oldest = list.get(0);
+
+            if(oldest == null) {
+                return 0;
+            }
+
+            return Config.CAVERSIA_UPKEEP_TIMEOUT.getSeconds() - ((int) NumberUtils.systemSeconds() - oldest.getTimeCreated());
+        }
+    }
+
+    public static class UpkeepFee extends AbstractChangeable implements ConfigurationSerializable {
+        private boolean paid;
+        private DarkRiseItem item;
+        private int amount;
+        private int timeCreated, timePaid;
+
+        /**
+         * The constructor
+         */
+        public UpkeepFee() {
+            setItem(Config.CAVERSIA_UPKEEP_ITEM.get());
+            setAmount(Config.CAVERSIA_UPKEEP_AMOUNT.getInt());
+            setTimeCreated((int) NumberUtils.systemSeconds());
+        }
+
+        /**
+         * Deserializes the object
+         * from a map
+         *
+         * @param map the map
+         */
+        public UpkeepFee(Map<String, Object> map) {
+            setPaid((Boolean) map.get("paid"));
+            setItem(NovaGuilds.getInstance().getListenerManager().getListener(SiegeStoneListener.class).CAVERSIA_ECONOMY.getItems().getItemByIdOrName((String) map.get("item")));
+            setAmount((Integer) map.get("amount"));
+            setTimeCreated((Integer) map.get("time.created"));
+
+            if(isPaid()) {
+                setTimePaid((Integer) map.get("time.paid"));
+            }
+
+            setUnchanged();
+        }
+
+        @Override
+        public Map<String, Object> serialize() {
+            Map<String, Object> map = new HashMap<>();
+
+            map.put("paid", isPaid());
+            map.put("item", getItem().getName());
+            map.put("amount", getAmount());
+            map.put("time.created", getTimeCreated());
+
+            if(isPaid()) {
+                map.put("time.paid", getTimePaid());
+            }
+
+            return map;
+        }
+
+        /**
+         * Gets if the fee has
+         * been paid already
+         *
+         * @return boolean
+         */
+        public boolean isPaid() {
+            return paid;
+        }
+
+        /**
+         * Gets the item
+         *
+         * @return the item
+         */
+        public DarkRiseItem getItem() {
+            return item;
+        }
+
+        /**
+         * Gets the amount
+         *
+         * @return the amount
+         */
+        public int getAmount() {
+            return amount;
+        }
+
+        /**
+         * Gets the time when the fee
+         * has been created
+         *
+         * @return unixtime
+         */
+        public int getTimeCreated() {
+            return timeCreated;
+        }
+
+        /**
+         * Gets time when the fee has been paid
+         *
+         * @return unixtime
+         */
+        public int getTimePaid() {
+            return timePaid;
+        }
+
+        /**
+         * Sets if paid
+         *
+         * @param paid boolean
+         */
+        public void setPaid(boolean paid) {
+            this.paid = paid;
+            setChanged();
+        }
+
+        /**
+         * Sets paid to true
+         */
+        public void setPaid() {
+            this.paid = true;
+            setChanged();
+        }
+
+        /**
+         * Sets the item
+         *
+         * @param item  the items
+         */
+        public void setItem(DarkRiseItem item) {
+            this.item = item;
+            setChanged();
+        }
+
+        /**
+         * Sets the amount
+         *
+         * @param amount the amount
+         */
+        public void setAmount(int amount) {
+            this.amount = amount;
+            setChanged();
+        }
+
+        /**
+         * Sets the time the
+         * fee has been created
+         *
+         * @param timeCreated unixtime
+         */
+        public void setTimeCreated(int timeCreated) {
+            this.timeCreated = timeCreated;
+            setChanged();
+        }
+
+        /**
+         * Sets the time when the fee has been paid
+         *
+         * @param timePaid unixtime
+         */
+        public void setTimePaid(int timePaid) {
+            this.timePaid = timePaid;
+            setChanged();
+        }
+
+        /**
+         * Updates the paid time to current unixtime
+         */
+        public void updateTimePaid() {
+            setTimePaid((int) NumberUtils.systemSeconds());
+        }
+    }
+
     private Block block;
     private StoneWager stoneWager;
     private String name = "";
     private int lastAttackTime;
     private Warmup warmup;
+    private Collection<UpkeepFee> upkeepFees = new ArrayList<>();
 
     /**
      * The constructor
@@ -141,6 +384,19 @@ public class SiegeStone extends AbstractResource implements ConfigurationSeriali
         else {
             getWarmup();
         }
+
+        if(map.containsKey("upkeep")) {
+            if(!(map.get("upkeep") instanceof List)) {
+                throw new IllegalArgumentException("The data of a siege stone has been corrupted. The upkeep list is not actually a list.");
+            }
+
+            //noinspection unchecked
+            List<Map<String, Object>> upkeepList = (List<Map<String, Object>>) map.get("upkeep");
+
+            for(Map<String, Object> upkeepFeeEntry : upkeepList) {
+                upkeepFees.add(new UpkeepFee(upkeepFeeEntry));
+            }
+        }
     }
 
     @Override
@@ -160,12 +416,36 @@ public class SiegeStone extends AbstractResource implements ConfigurationSeriali
             map.put("warmup", getWarmup().serialize());
         }
 
+        if(!getUpkeepFees().isEmpty()) {
+            List<Map<String, Object>> list = new ArrayList<>();
+
+            for(UpkeepFee upkeepFee: getUpkeepFees()) {
+                if(upkeepFee.isPaid()) {
+                    continue;
+                }
+
+                list.add(upkeepFee.serialize());
+            }
+
+            map.put("upkeep", list);
+        }
+
         return map;
     }
 
     @Override
     public boolean isChanged() {
-        return super.isChanged() || hasWarmup();
+        if(super.isChanged() || hasWarmup()) {
+            return true;
+        }
+
+        for(UpkeepFee upkeepFee : getUpkeepFees()) {
+            if(upkeepFee.isChanged()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -204,6 +484,12 @@ public class SiegeStone extends AbstractResource implements ConfigurationSeriali
         return lastAttackTime;
     }
 
+    /**
+     * Gets the warmup
+     * If null creates a new one
+     *
+     * @return the warmup
+     */
     public Warmup getWarmup() {
         if(warmup == null) {
             warmup = new Warmup();
@@ -212,6 +498,42 @@ public class SiegeStone extends AbstractResource implements ConfigurationSeriali
         return warmup;
     }
 
+    /**
+     * Gets upkeep fees
+     *
+     * @return set of upkeep fees
+     */
+    public Collection<UpkeepFee> getUpkeepFees() {
+        return upkeepFees;
+    }
+
+    /**
+     * Adds an upkeep fee
+     *
+     * @param upkeepFee upkeep fee instance
+     */
+    public void addUpkeepFee(UpkeepFee upkeepFee) {
+        Validate.notNull(upkeepFee);
+        upkeepFees.add(upkeepFee);
+        setChanged();
+    }
+
+    /**
+     * Removes an upkeep fee
+     *
+     * @param upkeepFee upkeep fee
+     */
+    public void removeUpkeepFee(UpkeepFee upkeepFee) {
+        Validate.notNull(upkeepFee);
+        upkeepFees.remove(upkeepFee);
+        setChanged();
+    }
+
+    /**
+     * Checks if the siege stone has a warmup
+     *
+     * @return boolean
+     */
     public boolean hasWarmup() {
         return warmup != null && warmup.getStartTime() > 0 && warmup.getTimeLeft() > 0;
     }
@@ -272,6 +594,12 @@ public class SiegeStone extends AbstractResource implements ConfigurationSeriali
         setLastAttackTime((int) NumberUtils.systemSeconds());
     }
 
+    /**
+     * Applies data to the instance
+     * from an existing siege stone instance
+     *
+     * @param siegeStone siege stone instance
+     */
     public void apply(SiegeStone siegeStone) {
         block = siegeStone.getBlock();
         stoneWager = siegeStone.getStoneWager();

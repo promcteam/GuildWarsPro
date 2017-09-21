@@ -178,6 +178,12 @@ public abstract class Config {
 	public static ConfigWrapper CAVERSIA_REGION_LARGE_SIZE;
 	public static ConfigWrapper CAVERSIA_SIEGECOOLDOWN;
 	public static ConfigWrapper CAVERSIA_WARMUP;
+	public static ConfigWrapper CAVERSIA_UPKEEP_TIMEOUT;
+	public static ConfigWrapper.Typed<DarkRiseItem> CAVERSIA_UPKEEP_ITEM = new ConfigWrapperImpl.Typed<DarkRiseItem>(DarkRiseItem.class);
+	public static ConfigWrapper CAVERSIA_UPKEEP_AMOUNT;
+	public static ConfigWrapper CAVERSIA_UPKEEP_TIME;
+	public static ConfigWrapper CAVERSIA_UPKEEP_TASK_INTERVAL;
+	public static ConfigWrapper CAVERSIA_UPKEEP_TASK_START;
 	public static ConfigWrapper CAVERSIA_CONTROLPOINT_BLOCK_VULNERABLE;
 	public static ConfigWrapper CAVERSIA_CONTROLPOINT_BLOCK_NONVULNERABLE;
 	public static ConfigWrapper CAVERSIA_CONTROLPOINT_RADIUS;
