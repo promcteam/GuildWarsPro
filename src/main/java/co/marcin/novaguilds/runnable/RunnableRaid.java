@@ -36,7 +36,11 @@ import co.marcin.novaguilds.util.LoggerUtils;
 import co.marcin.novaguilds.util.NumberUtils;
 import com.gotofinal.darkrise.economy.DarkRiseItem;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -193,6 +197,14 @@ public class RunnableRaid implements Runnable {
 					   .setVar(VarKey.NAME, controlPoint.getName())
 					   .setVar(VarKey.GUILD_NAME, raid.getGuild().getName())
 					   .broadcast();
+
+				//Fireworks!
+				Location location = controlPoint.getLocation().getWorld().getHighestBlockAt(controlPoint.getLocation()).getLocation();
+				location.add(0.5, 0, 0.5);
+				for(FireworkMeta effect : plugin.getListenerManager().getListener(ControlPointListener.class).fireworkEffects) {
+					Firework entity = (Firework) controlPoint.getLocation().getWorld().spawnEntity(location, EntityType.FIREWORK);
+					entity.setFireworkMeta(effect);
+				}
 
 				final Map<VarKey, String> vars = new HashMap<>();
 				for(NovaPlayer nPlayer : raid.getParticipants()) {

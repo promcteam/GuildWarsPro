@@ -39,13 +39,18 @@ import co.marcin.novaguilds.util.LoggerUtils;
 import co.marcin.novaguilds.util.NumberUtils;
 import co.marcin.novaguilds.util.StringUtils;
 import com.gotofinal.darkrise.economy.DarkRiseItem;
+import com.gotofinal.darkrise.spigot.core.utils.item.FireworkBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.meta.FireworkMeta;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +66,7 @@ public class ControlPointListener extends AbstractListener {
     private final Set<ControlPoint> controlPoints = new HashSet<>();
     private final Map<DarkRiseItem, Integer> rewardsWinners = new HashMap<>();
     private final Map<DarkRiseItem, Integer> rewardsLosers = new HashMap<>();
+    public final Collection<FireworkMeta> fireworkEffects = new HashSet<>();
 
     public ControlPointListener() {
         COMMAND_ACCESS.setName("CAVERSIA_CONTROLPOINT_ACCESS");
@@ -84,6 +90,18 @@ public class ControlPointListener extends AbstractListener {
 
         parseRewards(Config.CAVERSIA_CONTROLPOINT_REWARDS_WINNERS.getStringList(), rewardsWinners);
         parseRewards(Config.CAVERSIA_CONTROLPOINT_REWARDS_LOSERS.getStringList(), rewardsLosers);
+
+        //Firework effects
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> fireworkList = (List<Map<String, Object>>) plugin.getConfig().getList(Config.CAVERSIA_CONTROLPOINT_FIREWORKS.getPath());
+
+        for(Map<String, Object> fireworkData : fireworkList) {
+            FireworkMeta meta = (FireworkMeta) Bukkit.getItemFactory().getItemMeta(Material.FIREWORK);
+            new FireworkBuilder(fireworkData).apply(meta);
+            fireworkEffects.add(meta);
+        }
+
+        LoggerUtils.debug("");
     }
 
     private void parseRewards(List<String> list, Map<DarkRiseItem, Integer> map) {
