@@ -235,6 +235,12 @@ raid:
 # inactive time after which the raid is over      #
  timeinactive: 30s
 
+# Maximum raid duration #
+ maxduration: 5m
+
+# Maximum multiplier #
+ maxmultiplier: 2
+
 # +5% points/money for pvp kill during raid       #
  pvp:
   bonuspercent:
@@ -730,3 +736,56 @@ region:
 # deny riding mobs                                #
  denyriding:
   - HORSE
+
+caversia:
+ region:
+  small:
+   members: 10
+   item: item:id
+   price:
+    currency: MONEY
+    amount: 10000
+   size: 5
+  large:
+   members: 20
+   item: item:id
+   price:
+    currency: MONEY
+    amount: 250000
+   size: 10
+ siegecooldown: 24h
+ warmup: 24h
+ upkeep:
+  timeout: 30d
+  item: ironore
+  amount: 1
+  time: 1d
+  task:
+   interval: 24h
+   start: 10s
+ controlpoint:
+   block:
+    vulnerable: "STAINED_GLASS:14"
+    nonvulnerable: "STAINED_GLASS:11"
+   radius: 10
+   vulnerablenotify: 2s
+   multiplier: 20
+   maxmultiplier: 20
+   cooldown: 15s
+   commands:
+    winners: []
+    losers: []
+    global: []
+   rewards:
+    winners: []
+    losers: []
+   fireworks:
+   - TYPE: firework
+     power: 2
+     effects:
+     - type: BALL
+       trail: false
+       flicker: true
+       colors: [FFFFFF]
+       fadeColors: []
+   money: 0

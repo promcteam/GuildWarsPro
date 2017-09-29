@@ -21,6 +21,7 @@ package co.marcin.novaguilds.manager;
 import co.marcin.novaguilds.impl.util.logging.LoggedPluginManager;
 import co.marcin.novaguilds.listener.ChatListener;
 import co.marcin.novaguilds.listener.ChestGUIListener;
+import co.marcin.novaguilds.listener.ControlPointListener;
 import co.marcin.novaguilds.listener.DeathListener;
 import co.marcin.novaguilds.listener.LoginListener;
 import co.marcin.novaguilds.listener.MoveListener;
@@ -28,6 +29,7 @@ import co.marcin.novaguilds.listener.PacketListener;
 import co.marcin.novaguilds.listener.PlayerInfoListener;
 import co.marcin.novaguilds.listener.PvpListener;
 import co.marcin.novaguilds.listener.RegionInteractListener;
+import co.marcin.novaguilds.listener.SiegeStoneListener;
 import co.marcin.novaguilds.listener.ToolListener;
 import co.marcin.novaguilds.util.LoggerUtils;
 import org.bukkit.event.Event;
@@ -64,6 +66,8 @@ public class ListenerManager {
 		new DeathListener();
 		new PlayerInfoListener();
 		new ChestGUIListener();
+		new SiegeStoneListener();
+		new ControlPointListener();
 		packetListener = new PacketListener();
 	}
 

@@ -21,6 +21,7 @@ package co.marcin.novaguilds.impl.basic;
 import co.marcin.novaguilds.api.basic.NovaGuild;
 import co.marcin.novaguilds.api.basic.NovaPlayer;
 import co.marcin.novaguilds.api.basic.NovaRaid;
+import co.marcin.novaguilds.api.basic.NovaRegion;
 import co.marcin.novaguilds.util.NumberUtils;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class NovaRaidImpl implements NovaRaid {
 	private float progress;
 	private final List<NovaPlayer> playersOccupying = new ArrayList<>();
 	private Result result = Result.DURING;
+	private NovaRegion region;
 
 	/**
 	 * The constructor
@@ -94,6 +96,11 @@ public class NovaRaidImpl implements NovaRaid {
 	}
 
 	@Override
+	public NovaRegion getRegion() {
+		return region;
+	}
+
+	@Override
 	public void setGuildAttacker(NovaGuild guild) {
 		guildAttacker = guild;
 	}
@@ -135,6 +142,11 @@ public class NovaRaidImpl implements NovaRaid {
 	@Override
 	public void setResult(Result result) {
 		this.result = result;
+	}
+
+	@Override
+	public void setRegion(NovaRegion region) {
+		this.region = region;
 	}
 
 	@Override

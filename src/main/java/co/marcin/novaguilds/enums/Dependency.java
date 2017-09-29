@@ -33,6 +33,7 @@ public enum Dependency {
 	SCOREBOARDSTATS("ScoreboardStats", false),
 	WORLDGUARD("WorldGuard", false, new DependencyManager.WorldGuardFlagInjector()),
 	DYNMAP("dynmap", false),
+	DARKRISE_ECONOMY("Economy", true),
 	HOLOGRAPHICDISPLAYS("HolographicDisplays", false, new DependencyManager.HolographicDisplaysAPIChecker());
 
 	private final String name;

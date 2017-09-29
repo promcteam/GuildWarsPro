@@ -32,6 +32,7 @@ import co.marcin.novaguilds.enums.Message;
 import co.marcin.novaguilds.enums.VarKey;
 import co.marcin.novaguilds.impl.basic.NovaGroupImpl;
 import co.marcin.novaguilds.impl.basic.NovaGuildImpl;
+import co.marcin.novaguilds.listener.SiegeStoneListener;
 import co.marcin.novaguilds.runnable.RunnableTeleportRequest;
 import co.marcin.novaguilds.util.ItemStackUtils;
 import co.marcin.novaguilds.util.LoggerUtils;
@@ -137,7 +138,9 @@ public class GuildManager {
 	 * @return collection of guilds
 	 */
 	public Collection<NovaGuild> getGuilds() {
-		return guilds.values();
+		Collection<NovaGuild> values = guilds.values();
+		values.remove(SiegeStoneListener.GUILD);
+		return values;
 	}
 
 	/**

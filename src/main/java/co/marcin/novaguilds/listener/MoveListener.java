@@ -20,9 +20,12 @@ package co.marcin.novaguilds.listener;
 
 import co.marcin.novaguilds.api.basic.NovaPlayer;
 import co.marcin.novaguilds.api.basic.NovaRegion;
+import co.marcin.novaguilds.enums.Config;
+import co.marcin.novaguilds.impl.basic.ControlPoint;
 import co.marcin.novaguilds.impl.util.AbstractListener;
 import co.marcin.novaguilds.manager.PlayerManager;
 import co.marcin.novaguilds.manager.RegionManager;
+import co.marcin.novaguilds.runnable.RunnableRaid;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -68,6 +71,32 @@ public class MoveListener extends AbstractListener {
 		//exiting
 		if(fromRegion != null && toRegion == null && nPlayer.getAtRegion() != null) {
 			plugin.getRegionManager().playerExitedRegion(player);
+		}
+
+		//Control Points
+		if(!nPlayer.hasGuild()) {
+			return;
+		}
+
+		for(ControlPoint controlPoint : plugin.getListenerManager().getListener(ControlPointListener.class).getControlPoints()) {
+			if(player.getLocation().distance(controlPoint.getLocation()) > Config.CAVERSIA_CONTROLPOINT_RADIUS.getInt()
+					|| (controlPoint.isRaid() && controlPoint.getRaid().getPlayersOccupying().contains(nPlayer))
+					|| !controlPoint.isVulnerable()) {
+				continue;
+			}
+
+			ControlPoint.Raid raid = controlPoint.getRaid();
+			if(!controlPoint.isRaid()) {
+				raid = controlPoint.createRaid(nPlayer.getGuild());
+				controlPoint.setRaid(raid);
+
+				if(!RunnableRaid.isRaidRunnableRunning()) {
+					new RunnableRaid().schedule();
+				}
+			}
+
+			raid.addPlayerOccupying(nPlayer);
+			raid.addParticipant(nPlayer);
 		}
 	}
 }

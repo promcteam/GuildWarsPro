@@ -209,6 +209,13 @@ chat:
     access: "&4&l> &7/nga &cplayer &2- &6Player commands"
     set:
      points: "&4&l> &7/nga &cp &6<&cplayer&6> points &6<&cpoints&6> &2- &6Set player points"
+   caversia:
+    access: "&4&l> &7/nga &ccaversia &2- &6Caversia commands"
+    rename: "&4&l> &7/nga &ccaversia &crename &6<&cname&6> &2- &6Rename a region"
+    controlpoint:
+     access: "&4&l> &7/nga &ccaversia &ccontrolpoint &2- &6Control point commands"
+     rename: "&4&l> &7/nga &ccaversia &ccontrolpoint &crename &6<&cname&6> &2- &6Rename a control point"
+     list: "&4&l> &7/g &cp &2- &6List vulnerable control points"
   guild:
    access: "&4&l> &7/g &2- &6Guild commands"
    abandon: "&4&l> &7/abandon &2- &6abandon your guild"
@@ -253,6 +260,7 @@ chat:
    delete: "&4&l> &7/g &crg &6delete &6<&cindex&6> &2- &6Delete the region"
    enlarge: "&4&l> &7/g &crg &6enlarge &6[&cindex&6] &2- &6Enlarge a region"
    list: "&4&l> &7/g &crg &6list &2- &6List regions"
+   transfer: "&4&l> &7/nga &crg transfer &6<&cguild&6> &6[&cindex&6] &2- &6Transfer a region"
   tool: "&4&l> &7/ng &ctool &2- &6Check or select area with the tool!"
   player:
    info: "&4&l> &7/pi &2- &6Player info"
@@ -308,6 +316,7 @@ chat:
     - "&4&l> &7/g &crank &2- &6rank commands"
     - "{ABANDON}&4&l> &7/abandon &2- &6abandon your guild"
     - "{INVITE}&4&l> &7/invite &6<&cplayer&6> &2- &6invite player to your guild"
+    - "&4&l> &7/g &cp &2- &6List vulnerable control points"
 
  pvp:
   team: "You cannot hurt your teammates"
@@ -466,6 +475,7 @@ chat:
  region:
   blockedcmd: "This command is blocked at regions."
   deleted: "Region deleted successfully"
+  transferred: "Region transferred successfully"
   deny:
    interact: "You cannot interact here"
    ridemob: "You cannot ride this mob, its protected!"
@@ -507,7 +517,8 @@ chat:
    modes:
     check: "Check Mode"
     select: "Select Mode"
-  
+    stonewager: "Stone Wager"
+    controlpoint: "Control Point"
   
  createguild:
   disabledworld: "Guilds are disabled in this world."
@@ -556,6 +567,7 @@ chat:
    - "&4&l> &7Wars: {WARS}"
    - "&4&l> &7Money: &6{MONEY}"
    - "&4&l> &7Points: &6{GUILD_POINTS}"
+   - "&4&l> &7Warmup left: &6{TIME}"
   info:
    - "&4*** &6Guild information &4***"
    - "&4&l> &7Name: &6{GUILD_NAME}"
@@ -570,7 +582,66 @@ chat:
    - "&4&l> &7Allies: {ALLIES}"
    - "&4&l> &7Wars: {WARS}"
    - "&4&l> &7Points: &6{GUILD_POINTS}"
-   
+   - "&4&l> &7Warmup left: &6{TIME}"
+ caversia:
+  nosiegestone: "You need a Siege Stone to claim or initiate a war for &a{NAME}"
+  notenoughmembers: "You need \"{AMOUNT}\" amount of Guild members to claim this &a{NAME}"
+  controlpoint:
+   invalid: "Could not find the control point"
+   renamed: "You renamed the control point to &a{NAME}"
+   created: "Control point created!"
+   broadcast:
+    soonvulnerable: "{NAME} will be vulnerable in {TIME}"
+    vulnerable: "{NAME} is now vulnerable"
+    captured: "{GUILD_NAME} has captured {NAME}"
+    bossbar: "{GUILD_NAME} is raiding control point: {NAME}"
+   list:
+    header: "Vulnerable control points"
+    row: "{NAME}"
+   description:
+    owned:
+     'yes': "Owning Guild: {GUILD_NAME}"
+     'no': "Not owned"
+    vulnerable:
+     'yes': "Vulnerable"
+     'no': "Not vulnerable for: {TIME}"
+    pattern:
+     - "Control Point"
+     - "Name {NAME}"
+     - "{TAG1}"
+     - "{TAG2}"
+  upkeep:
+   paid: "You paid x{AMOUNT} {ITEMNAME} as a fee"
+  region:
+   claimed: "You successfully claimed this &a{NAME}"
+   renamed: "You renamed the region to &a{NAME}"
+   created: "You created a new region."
+   unclaimed: "&a{NAME} has not been claimed."
+  gui:
+   regioninfo:
+    title: "Region Menu"
+    name: "Region Info"
+    owned:
+     'yes': "Owning Guild: {GUILD_NAME}"
+     'no': "Not Owned"
+    vulnerable:
+     'yes': "Open for attack!"
+     'no': "Vulnerable: {}"
+    lore:
+     - "Region Name: {NAME}"
+     - "{TAG1}"
+     - "{TAG2}"
+   upkeep:
+    name: "Upkeep fees"
+    lore:
+     - "Click the icon to pay the fee"
+     - "Past due: {AMOUNT}"
+     - "Total due: {COUNT}"
+     - "Days left to disband the region: {TIME}"
+   warmup:
+    name: "Start warmup"
+    started: "Warmup has been started"
+
 #broadcast messages:
 broadcast:
  admin:

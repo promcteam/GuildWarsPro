@@ -22,6 +22,7 @@ import co.marcin.novaguilds.NovaGuilds;
 import co.marcin.novaguilds.api.basic.MessageWrapper;
 import co.marcin.novaguilds.api.basic.NovaGuild;
 import co.marcin.novaguilds.api.basic.NovaPlayer;
+import co.marcin.novaguilds.api.basic.NovaRegion;
 import co.marcin.novaguilds.command.abstractexecutor.AbstractCommandExecutor;
 import co.marcin.novaguilds.enums.Config;
 import co.marcin.novaguilds.enums.Message;
@@ -182,6 +183,15 @@ public class CommandGuildInfo extends AbstractCommandExecutor {
 		vars.put(VarKey.ALLIES, allies);
 		vars.put(VarKey.WARS, wars);
 
+		int warmupTime = 0;
+		for(NovaRegion region : guild.getRegions()) {
+			if(region.getSiegeStone().hasWarmup()) {
+				warmupTime = region.getSiegeStone().getWarmup().getTimeLeft();
+				vars.put(VarKey.TIME, StringUtils.secondsToString(warmupTime, TimeUnit.MINUTES));
+				break;
+			}
+		}
+
 		for(i = 1; i < guildInfoMessages.size(); i++) {
 			boolean skip = false;
 			String guildInfoMessage = guildInfoMessages.get(i);
@@ -219,6 +229,10 @@ public class CommandGuildInfo extends AbstractCommandExecutor {
 			}
 
 			if(guildInfoMessage.contains(VarKey.CREATEDAGO.getNameWithBrackets()) && protectionLeft > 0) {
+				skip = true;
+			}
+
+			if(guildInfoMessage.contains(VarKey.TIME.getNameWithBrackets()) && warmupTime == 0) {
 				skip = true;
 			}
 

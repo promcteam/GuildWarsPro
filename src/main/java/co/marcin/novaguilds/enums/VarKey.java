@@ -129,6 +129,7 @@ public enum VarKey {
 	ID,
 	UUID,
 	INDEX,
+	TIME,
 
 	//global keys
 	NOVAGUILDS_TOP,

@@ -18,10 +18,7 @@
 
 package co.marcin.novaguilds.enums;
 
-public enum RegionMode {
-	CHECK,
-	SELECT,
-	RESIZE,
-	STONEWAGER,
-	CONTROLPOINT,
+public enum StoneWager {
+    SMALL,
+    LARGE,
 }

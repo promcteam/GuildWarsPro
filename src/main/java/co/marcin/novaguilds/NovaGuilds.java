@@ -32,11 +32,17 @@ import co.marcin.novaguilds.enums.Dependency;
 import co.marcin.novaguilds.enums.EntityUseAction;
 import co.marcin.novaguilds.exception.FatalNovaGuildsException;
 import co.marcin.novaguilds.exception.StorageConnectionFailedException;
+import co.marcin.novaguilds.impl.basic.ControlPoint;
+import co.marcin.novaguilds.impl.basic.SiegeStone;
 import co.marcin.novaguilds.impl.storage.StorageConnector;
+import co.marcin.novaguilds.impl.storage.managers.file.yaml.ResourceManagerControlPointImpl;
+import co.marcin.novaguilds.impl.storage.managers.file.yaml.ResourceManagerSiegeStoneImpl;
 import co.marcin.novaguilds.impl.util.AbstractListener;
 import co.marcin.novaguilds.impl.util.ScoreboardStatsHook;
 import co.marcin.novaguilds.impl.util.bossbar.BossBarUtils;
 import co.marcin.novaguilds.impl.util.logging.WrappedLogger;
+import co.marcin.novaguilds.listener.ControlPointListener;
+import co.marcin.novaguilds.listener.SiegeStoneListener;
 import co.marcin.novaguilds.listener.VanishListener;
 import co.marcin.novaguilds.listener.VaultListener;
 import co.marcin.novaguilds.manager.CommandManager;
@@ -174,6 +180,10 @@ public class NovaGuilds extends JavaPlugin implements NovaGuildsAPI {
 			//Data loading
 			getGuildManager().load();
 			LoggerUtils.info("Guilds data loaded");
+			getListenerManager().getListener(SiegeStoneListener.class).init();
+			getStorage().registerResourceManager(SiegeStone.class, new ResourceManagerSiegeStoneImpl(getStorage()));
+			getStorage().registerResourceManager(ControlPoint.class, new ResourceManagerControlPointImpl(getStorage()));
+			getListenerManager().getListener(ControlPointListener.class).load();
 			getRegionManager().load();
 			LoggerUtils.info("Regions data loaded");
 			getRankManager().loadDefaultRanks();
@@ -367,6 +377,7 @@ public class NovaGuilds extends JavaPlugin implements NovaGuildsAPI {
 		getRegionManager().save();
 		getPlayerManager().save();
 		getRankManager().save();
+		getListenerManager().getListener(ControlPointListener.class).save();
 		LoggerUtils.info("Saved all data");
 
 		if(getPacketExtension() != null) {

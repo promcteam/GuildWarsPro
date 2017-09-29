@@ -29,6 +29,7 @@ public abstract class AbstractFileStorage extends AbstractStorage {
 	private final File guildsDirectory;
 	private final File regionsDirectory;
 	private final File ranksDirectory;
+	private final File siegeStoneDirectory;
 
 	/**
 	 * AbstractFileStorage constructor
@@ -42,6 +43,7 @@ public abstract class AbstractFileStorage extends AbstractStorage {
 		guildsDirectory = new File(dataDirectory, "guild/");
 		regionsDirectory = new File(dataDirectory, "region/");
 		ranksDirectory = new File(dataDirectory, "rank/");
+		siegeStoneDirectory = new File(dataDirectory, "siegestone/");
 
 		if(!setUp()) {
 			throw new StorageConnectionFailedException("Failed creating directories");
@@ -69,6 +71,10 @@ public abstract class AbstractFileStorage extends AbstractStorage {
 
 			if(!ranksDirectory.exists() && ranksDirectory.mkdirs()) {
 				LoggerUtils.info("Ranks directory created");
+			}
+
+			if(!siegeStoneDirectory.exists() && siegeStoneDirectory.mkdirs()) {
+				LoggerUtils.info("Siege stone directory created");
 			}
 		}
 		else {

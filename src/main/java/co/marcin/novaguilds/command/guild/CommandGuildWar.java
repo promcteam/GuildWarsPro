@@ -163,7 +163,6 @@ public class CommandGuildWar extends AbstractCommandExecutor {
 			Message.BROADCAST_GUILD_WAR.vars(vars).broadcast();
 			TagUtils.refresh();
 			TabUtils.refresh();
-			plugin.getRegionManager().checkRaidInit(nPlayer);
 		}
 	}
 

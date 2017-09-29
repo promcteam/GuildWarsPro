@@ -31,13 +31,14 @@ import co.marcin.novaguilds.enums.Dependency;
 import co.marcin.novaguilds.enums.Message;
 import co.marcin.novaguilds.enums.RegionValidity;
 import co.marcin.novaguilds.enums.VarKey;
+import co.marcin.novaguilds.impl.basic.SiegeStone;
 import co.marcin.novaguilds.impl.util.RegionSelectionImpl;
-import co.marcin.novaguilds.runnable.RunnableRaid;
+import co.marcin.novaguilds.listener.SiegeStoneListener;
+import co.marcin.novaguilds.runnable.RunnableWarmupEnd;
 import co.marcin.novaguilds.util.LoggerUtils;
-import co.marcin.novaguilds.util.NumberUtils;
 import co.marcin.novaguilds.util.RegionUtils;
-import co.marcin.novaguilds.util.StringUtils;
 import co.marcin.novaguilds.util.reflect.Reflections;
+import com.google.common.collect.Iterables;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
@@ -141,6 +142,21 @@ public class RegionManager {
 
 		getResourceManager().load();
 
+		for(SiegeStone siegeStone : plugin.getStorage().getResourceManager(SiegeStone.class).load()) {
+			for(NovaRegion region : Iterables.concat(getRegions(), SiegeStoneListener.GUILD.getRegions())) {
+				if(region.getUUID().equals(siegeStone.getUUID())) {
+					region.getSiegeStone().apply(siegeStone);
+
+					if(region.getSiegeStone().hasWarmup()) {
+						new RunnableWarmupEnd(region).schedule();
+					}
+
+					region.getSiegeStone().setUnchanged();
+					break;
+				}
+			}
+		}
+
 		LoggerUtils.info("Loaded " + getRegions().size() + " regions.");
 	}
 
@@ -158,7 +174,9 @@ public class RegionManager {
 	 */
 	public void save() {
 		long startTime = System.nanoTime();
-		int count = getResourceManager().executeSave() + getResourceManager().save(getRegions());
+		int count = getResourceManager().executeSave()
+				+ getResourceManager().save(getRegions())
+				+ getResourceManager().save(SiegeStoneListener.GUILD.getRegions());
 		LoggerUtils.info("Regions data saved in " + TimeUnit.MILLISECONDS.convert((System.nanoTime() - startTime), TimeUnit.NANOSECONDS) / 1000.0 + "s (" + count + " regions)");
 
 		startTime = System.nanoTime();
@@ -471,44 +489,18 @@ public class RegionManager {
 	 * @param nPlayer the initiator
 	 */
 	public void checkRaidInit(NovaPlayer nPlayer) {
-		if(!Config.RAID_ENABLED.getBoolean() || !nPlayer.hasGuild() || !nPlayer.isAtRegion()) {
+		if(!Config.RAID_ENABLED.getBoolean() || !nPlayer.hasGuild()) {
 			return;
 		}
 
-		if(!nPlayer.getAtRegion().getGuild().getHome().getWorld().equals(nPlayer.getPlayer().getLocation().getWorld())
-				|| nPlayer.getAtRegion().getGuild().getHome().distance(nPlayer.getPlayer().getLocation()) > nPlayer.getAtRegion().getDiagonal()) {
-			return;
-		}
+		NovaRegion region = nPlayer.getAtRegion();
+		NovaGuild guildDefender = region.getGuild();
 
-		NovaGuild guildDefender = nPlayer.getAtRegion().getGuild();
-
-		if(nPlayer.getGuild().isWarWith(guildDefender)) {
-			if(guildDefender.isRaid()) {
-				nPlayer.setPartRaid(guildDefender.getRaid());
-				guildDefender.getRaid().addPlayerOccupying(nPlayer);
-			}
-			else {
-				if(NumberUtils.systemSeconds() - Config.RAID_TIMEREST.getSeconds() > guildDefender.getTimeRest()) {
-					if(guildDefender.getOnlinePlayers().size() >= Config.RAID_MINONLINE.getInt() || guildDefender.getOnlinePlayers().size() == guildDefender.getPlayers().size()) {
-						if(NumberUtils.systemSeconds() - guildDefender.getTimeCreated() > Config.GUILD_CREATEPROTECTION.getSeconds()) {
-							guildDefender.createRaid(nPlayer.getGuild());
-							guildDefender.getRaid().addPlayerOccupying(nPlayer);
-
-							if(!RunnableRaid.isRaidRunnableRunning()) {
-								new RunnableRaid().schedule();
-							}
-						}
-						else {
-							Message.CHAT_RAID_PROTECTION.send(nPlayer);
-						}
-					}
-				}
-				else {
-					final long timeWait = Config.RAID_TIMEREST.getSeconds() - (NumberUtils.systemSeconds() - guildDefender.getTimeRest());
-
-					Message.CHAT_RAID_RESTING.clone().setVar(VarKey.GUILD_TIME_REST, StringUtils.secondsToString(timeWait)).send(nPlayer);
-				}
-			}
+		if(nPlayer.getGuild().isWarWith(guildDefender)
+				&& nPlayer.isAtRegion()
+				&& guildDefender.isRaid()) {
+			nPlayer.setPartRaid(guildDefender.getRaid());
+			guildDefender.getRaid().addPlayerOccupying(nPlayer);
 		}
 	}
 
