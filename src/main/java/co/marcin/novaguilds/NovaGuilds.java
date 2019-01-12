@@ -23,6 +23,7 @@ import co.marcin.novaguilds.api.basic.NovaPlayer;
 import co.marcin.novaguilds.api.basic.TabList;
 import co.marcin.novaguilds.api.event.PlayerInteractEntityEvent;
 import co.marcin.novaguilds.api.manager.ErrorManager;
+import co.marcin.novaguilds.api.storage.ResourceManager;
 import co.marcin.novaguilds.api.storage.Storage;
 import co.marcin.novaguilds.api.util.SignGUI;
 import co.marcin.novaguilds.api.util.packet.PacketExtension;
@@ -33,10 +34,11 @@ import co.marcin.novaguilds.enums.EntityUseAction;
 import co.marcin.novaguilds.exception.FatalNovaGuildsException;
 import co.marcin.novaguilds.exception.StorageConnectionFailedException;
 import co.marcin.novaguilds.impl.basic.ControlPoint;
-import co.marcin.novaguilds.impl.basic.SiegeStone;
+import co.marcin.novaguilds.impl.basic.GuildVault;
+import co.marcin.novaguilds.impl.storage.AbstractDatabaseStorage;
 import co.marcin.novaguilds.impl.storage.StorageConnector;
+import co.marcin.novaguilds.impl.storage.managers.database.ResourceManagerVaultImpl;
 import co.marcin.novaguilds.impl.storage.managers.file.yaml.ResourceManagerControlPointImpl;
-import co.marcin.novaguilds.impl.storage.managers.file.yaml.ResourceManagerSiegeStoneImpl;
 import co.marcin.novaguilds.impl.util.AbstractListener;
 import co.marcin.novaguilds.impl.util.ScoreboardStatsHook;
 import co.marcin.novaguilds.impl.util.bossbar.BossBarUtils;
@@ -180,15 +182,21 @@ public class NovaGuilds extends JavaPlugin implements NovaGuildsAPI {
 			//Data loading
 			getGuildManager().load();
 			LoggerUtils.info("Guilds data loaded");
-			getListenerManager().getListener(SiegeStoneListener.class).init();
-			getStorage().registerResourceManager(SiegeStone.class, new ResourceManagerSiegeStoneImpl(getStorage()));
-			getStorage().registerResourceManager(ControlPoint.class, new ResourceManagerControlPointImpl(getStorage()));
+			SiegeStoneListener siegeStoneListener = getListenerManager().getListener(SiegeStoneListener.class);
+			siegeStoneListener.init();
+			siegeStoneListener.getStorage().registerResourceManager(ControlPoint.class, new ResourceManagerControlPointImpl(siegeStoneListener.getStorage()));
 			getListenerManager().getListener(ControlPointListener.class).load();
 			getRegionManager().load();
 			LoggerUtils.info("Regions data loaded");
 			getRankManager().loadDefaultRanks();
 			getPlayerManager().load();
 			LoggerUtils.info("Players data loaded");
+
+			if ((getStorage() instanceof AbstractDatabaseStorage)) {
+				ResourceManager<GuildVault> resourceManagerVault = new ResourceManagerVaultImpl((AbstractDatabaseStorage)getStorage());
+				getStorage().registerResourceManager(GuildVault.class, resourceManagerVault);
+				resourceManagerVault.load();
+			}
 
 			LoggerUtils.info("Post checks running");
 			getGuildManager().postCheck();
@@ -325,9 +333,7 @@ public class NovaGuilds extends JavaPlugin implements NovaGuildsAPI {
 				Config.SIGNGUI_ENABLED.set(false);
 			}
 
-			if(Config.VAULT_ENABLED.getBoolean()) {
-				new VaultListener();
-			}
+			new VaultListener();
 
 			if(getDependencyManager().isEnabled(Dependency.VANISHNOPACKET)) {
 				new VanishListener();
@@ -378,6 +384,12 @@ public class NovaGuilds extends JavaPlugin implements NovaGuildsAPI {
 		getPlayerManager().save();
 		getRankManager().save();
 		getListenerManager().getListener(ControlPointListener.class).save();
+
+		if(getStorage() instanceof AbstractDatabaseStorage) {
+			ResourceManager<GuildVault> resourceManagerVault = getStorage().getResourceManager(GuildVault.class);
+			resourceManagerVault.executeSave();
+		}
+
 		LoggerUtils.info("Saved all data");
 
 		if(getPacketExtension() != null) {

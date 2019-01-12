@@ -150,7 +150,7 @@ public class ResourceManagerRegionImpl extends AbstractYAMLResourceManager<NovaR
 				regionData.set("corner2.z", region.getCorner(1).getBlockZ());
 
 				//Siege stone
-				plugin.getStorage().getResourceManager(SiegeStone.class).save(region.getSiegeStone());
+				SiegeStoneListener.getInstance().getStorage().getResourceManager(SiegeStone.class).save(region.getSiegeStone());
 
 				//save
 				regionData.save(getFile(region));
@@ -174,7 +174,7 @@ public class ResourceManagerRegionImpl extends AbstractYAMLResourceManager<NovaR
 		}
 
 		if(getFile(region).delete()) {
-			plugin.getStorage().getResourceManager(SiegeStone.class).addToRemovalQueue(region.getSiegeStone());
+			SiegeStoneListener.getInstance().getStorage().getResourceManager(SiegeStone.class).addToRemovalQueue(region.getSiegeStone());
 			return true;
 		}
 		else {

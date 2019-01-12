@@ -23,11 +23,13 @@ import co.marcin.novaguilds.api.basic.NovaRegion;
 import co.marcin.novaguilds.enums.Config;
 import co.marcin.novaguilds.enums.GuildPermission;
 import co.marcin.novaguilds.enums.Message;
+import co.marcin.novaguilds.impl.basic.GuildVault;
 import co.marcin.novaguilds.impl.util.AbstractListener;
 import co.marcin.novaguilds.manager.PlayerManager;
 import co.marcin.novaguilds.manager.RegionManager;
 import co.marcin.novaguilds.util.CompatibilityUtils;
 import co.marcin.novaguilds.util.InventoryUtils;
+import co.marcin.novaguilds.util.LoggerUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -39,7 +41,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,10 +59,11 @@ public class VaultListener extends AbstractListener {
 		disallowedActions.add(InventoryAction.HOTBAR_MOVE_AND_READD);
 		disallowedActions.add(InventoryAction.HOTBAR_SWAP);
 		disallowedActions.add(InventoryAction.MOVE_TO_OTHER_INVENTORY);
-		disallowedActions.add(InventoryAction.PICKUP_ALL);
 		disallowedActions.add(InventoryAction.PICKUP_HALF);
 		disallowedActions.add(InventoryAction.PICKUP_ONE);
 		disallowedActions.add(InventoryAction.PICKUP_SOME);
+		disallowedActions.add(InventoryAction.PLACE_ONE);
+		disallowedActions.add(InventoryAction.PLACE_SOME);
 		disallowedActions.add(InventoryAction.SWAP_WITH_CURSOR);
 		disallowedActions.add(InventoryAction.DROP_ALL_CURSOR);
 		disallowedActions.add(InventoryAction.DROP_ALL_SLOT);
@@ -77,7 +82,7 @@ public class VaultListener extends AbstractListener {
 
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
-		if(plugin.getGuildManager().isVaultItemStack(event.getItemDrop().getItemStack())) {
+		if(Config.VAULT_ENABLED.getBoolean() && plugin.getGuildManager().isVaultItemStack(event.getItemDrop().getItemStack())) {
 			event.setCancelled(true);
 			Message.CHAT_GUILD_VAULT_DROP.send(event.getPlayer());
 		}
@@ -85,7 +90,7 @@ public class VaultListener extends AbstractListener {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInventoryClick(InventoryClickEvent event) {
-		if(event.getInventory() == null) {
+		if(event.getInventory() == null || !Config.VAULT_ENABLED.getBoolean()) {
 			return;
 		}
 
@@ -115,12 +120,66 @@ public class VaultListener extends AbstractListener {
 		event.setCancelled(true);
 	}
 
+	@EventHandler
+	public void onInventoryDrag(InventoryDragEvent event) {
+		if((event.getInventory() == null) || (!event.getInventory().getTitle().equals(Message.CHAT_CAVERSIA_GUI_VAULT_NAME.get()))) {
+			return;
+		}
+
+		event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onVaultInventoryClick(InventoryClickEvent event) {
+		if((event.getInventory() == null) || (!event.getInventory().getTitle().equals(Message.CHAT_CAVERSIA_GUI_VAULT_NAME.get()))) {
+			return;
+		}
+
+		NovaPlayer nPlayer = PlayerManager.getPlayer(event.getWhoClicked());
+		InventoryAction action = event.getAction();
+
+		if((disallowedActions.contains(action)) || (!nPlayer.hasGuild())) {
+			event.setCancelled(true);
+			LoggerUtils.debug(" Disallowed action!");
+			return;
+		}
+
+		if((!event.getView().getTopInventory().equals(CompatibilityUtils.getClickedInventory(event))) && (disallowedActions.contains(action))) {
+			event.setCancelled(true);
+			return;
+		}
+
+		boolean put = (action == InventoryAction.PLACE_SOME) || (action == InventoryAction.PLACE_ONE) || (action == InventoryAction.PLACE_ALL);
+
+
+		GuildPermission permission = put ? GuildPermission.VAULT_PUT : GuildPermission.VAULT_TAKE;
+
+		if(!nPlayer.hasPermission(permission)) {
+			event.setCancelled(true);
+			return;
+		}
+
+		GuildVault vault = nPlayer.getGuild().getVault();
+
+		if(put && event.getView().getTopInventory().equals(CompatibilityUtils.getClickedInventory(event))) {
+			ItemStack cursor = event.getCursor();
+
+			vault.addItem(event.getSlot(), cursor);
+			LoggerUtils.debug(String.format("Placed %s to slot %d", cursor.getType().name(), event.getSlot()));
+		}
+		else if(vault.getContent().containsKey(event.getSlot())
+				&& event.getView().getTopInventory().equals(CompatibilityUtils.getClickedInventory(event))) {
+			vault.removeItem(event.getSlot());
+			LoggerUtils.debug(String.format("Removed from slot: %d", event.getSlot()));
+		}
+	}
+
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		NovaPlayer nPlayer = PlayerManager.getPlayer(player);
 
-		if(plugin.getGuildManager().isVaultBlock(event.getBlock())) {
+		if(Config.VAULT_ENABLED.getBoolean() && plugin.getGuildManager().isVaultBlock(event.getBlock())) {
 			if(nPlayer.getPreferences().getBypass()) {
 				return;
 			}
@@ -157,7 +216,7 @@ public class VaultListener extends AbstractListener {
 	public void onBlockPlace(BlockPlaceEvent event) { //PLACING
 		Player player = event.getPlayer();
 
-		if(plugin.getRegionManager().canInteract(player, event.getBlock())) {
+		if(Config.VAULT_ENABLED.getBoolean() && plugin.getRegionManager().canInteract(player, event.getBlock())) {
 			NovaPlayer nPlayer = PlayerManager.getPlayer(player);
 			Material itemType = CompatibilityUtils.getItemInMainHand(player).getType();
 

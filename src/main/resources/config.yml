@@ -475,6 +475,7 @@ groups:
 # Guild's vault                                   #
 vault:
  enabled: true
+ size: 36
 
 # vault item #
  item: CHEST 1 name:&6Guild's_Vault

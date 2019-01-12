@@ -618,6 +618,10 @@ chat:
    created: "You created a new region."
    unclaimed: "&a{NAME} has not been claimed."
   gui:
+   vault:
+    name: "Guild Vault"
+   claim:
+    name: "Claim"
    regioninfo:
     title: "Region Menu"
     name: "Region Info"

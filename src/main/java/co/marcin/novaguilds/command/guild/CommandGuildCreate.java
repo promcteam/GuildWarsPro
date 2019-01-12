@@ -30,6 +30,7 @@ import co.marcin.novaguilds.enums.Config;
 import co.marcin.novaguilds.enums.Message;
 import co.marcin.novaguilds.enums.RegionValidity;
 import co.marcin.novaguilds.enums.VarKey;
+import co.marcin.novaguilds.impl.basic.GuildVault;
 import co.marcin.novaguilds.impl.basic.NovaGroupImpl;
 import co.marcin.novaguilds.impl.basic.NovaGuildIkkaImpl;
 import co.marcin.novaguilds.impl.basic.NovaGuildImpl;
@@ -173,6 +174,7 @@ public class CommandGuildCreate extends AbstractCommandExecutor {
 					guild = new NovaGuildImpl(UUID.randomUUID());
 				}
 
+				guild.setVault(new GuildVault(guild));
 				guild.setName(guildName);
 				guild.setTag(tag);
 				guild.setLeader(nPlayer);

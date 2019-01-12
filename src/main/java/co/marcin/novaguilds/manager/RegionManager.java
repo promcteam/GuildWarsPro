@@ -142,7 +142,7 @@ public class RegionManager {
 
 		getResourceManager().load();
 
-		for(SiegeStone siegeStone : plugin.getStorage().getResourceManager(SiegeStone.class).load()) {
+		for(SiegeStone siegeStone : SiegeStoneListener.getInstance().getStorage().getResourceManager(SiegeStone.class).load()) {
 			for(NovaRegion region : Iterables.concat(getRegions(), SiegeStoneListener.GUILD.getRegions())) {
 				if(region.getUUID().equals(siegeStone.getUUID())) {
 					region.getSiegeStone().apply(siegeStone);

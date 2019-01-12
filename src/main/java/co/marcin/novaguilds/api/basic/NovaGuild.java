@@ -20,6 +20,7 @@ package co.marcin.novaguilds.api.basic;
 
 import co.marcin.novaguilds.api.storage.Resource;
 import co.marcin.novaguilds.enums.AbandonCause;
+import co.marcin.novaguilds.impl.basic.GuildVault;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -141,6 +142,13 @@ public interface NovaGuild extends Resource {
 	 * @return the Location instance
 	 */
 	Location getVaultLocation();
+
+	/**
+	 * Gets the vault
+	 *
+	 * @return the vault
+	 */
+	GuildVault getVault();
 
 	/**
 	 * Gets the guild's home
@@ -303,6 +311,13 @@ public interface NovaGuild extends Resource {
 	 * @param location the Location instance
 	 */
 	void setVaultLocation(Location location);
+
+	/**
+	 * Sets the vault
+	 *
+	 * @param vault  the vault
+	 */
+	void setVault(GuildVault vault);
 
 	/**
 	 * Sets the home location

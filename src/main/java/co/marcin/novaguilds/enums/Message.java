@@ -483,6 +483,8 @@ public abstract class Message {
 	public static MessageWrapper CHAT_CAVERSIA_GUI_UPKEEP_NAME = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
 	public static MessageWrapper CHAT_CAVERSIA_GUI_UPKEEP_LORE = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
 	public static MessageWrapper CHAT_CAVERSIA_GUI_WARMUP_NAME = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
+	public static MessageWrapper CHAT_CAVERSIA_GUI_VAULT_NAME = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
+	public static MessageWrapper CHAT_CAVERSIA_GUI_CLAIM_NAME = new MessageWrapperImpl(MessageWrapper.Flag.NOPREFIX);
 	public static MessageWrapper CHAT_CAVERSIA_GUI_WARMUP_STARTED;
 
 	public static MessageWrapper BROADCAST_ADMIN_GUILD_ABANDON;

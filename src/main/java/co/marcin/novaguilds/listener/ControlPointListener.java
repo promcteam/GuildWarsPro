@@ -133,7 +133,8 @@ public class ControlPointListener extends AbstractListener {
 
     public ControlPoint getControlPoint(Location location) {
         for(ControlPoint controlPoint : controlPoints) {
-            if(controlPoint.getLocation().distance(location) < 1) {
+            if(controlPoint.getLocation().getWorld().equals(location.getWorld())
+                    && controlPoint.getLocation().distance(location) < 1) {
                 return controlPoint;
             }
         }
@@ -155,7 +156,7 @@ public class ControlPointListener extends AbstractListener {
 
     public void load() {
         controlPoints.clear();
-        controlPoints.addAll(plugin.getStorage().getResourceManager(ControlPoint.class).load());
+        controlPoints.addAll(SiegeStoneListener.getInstance().getStorage().getResourceManager(ControlPoint.class).load());
         runBroadcastTasks();
         LoggerUtils.info(String.format("Loaded %d control points!", controlPoints.size()));
     }
@@ -165,13 +166,13 @@ public class ControlPointListener extends AbstractListener {
      */
     public void save() {
         long nanoTime = System.nanoTime();
-        ResourceManager<ControlPoint> resourceManager = plugin.getStorage().getResourceManager(ControlPoint.class);
+        ResourceManager<ControlPoint> resourceManager = SiegeStoneListener.getInstance().getStorage().getResourceManager(ControlPoint.class);
         int count = resourceManager.executeSave() + resourceManager.save(controlPoints);
-        LoggerUtils.info("ControlPoint data saved in " + TimeUnit.MILLISECONDS.convert((System.nanoTime() - nanoTime), TimeUnit.NANOSECONDS) / 1000.0 + "s (" + count + " ranks)");
+        LoggerUtils.info("ControlPoint data saved in " + TimeUnit.MILLISECONDS.convert((System.nanoTime() - nanoTime), TimeUnit.NANOSECONDS) / 1000.0 + "s (" + count + " cps)");
 
         nanoTime = System.nanoTime();
         count = resourceManager.executeRemoval();
-        LoggerUtils.info("ControlPoint removed in " + TimeUnit.MILLISECONDS.convert((System.nanoTime() - nanoTime), TimeUnit.NANOSECONDS) / 1000.0 + "s (" + count + " ranks)");
+        LoggerUtils.info("ControlPoint removed in " + TimeUnit.MILLISECONDS.convert((System.nanoTime() - nanoTime), TimeUnit.NANOSECONDS) / 1000.0 + "s (" + count + " cps)");
     }
 
     public void runBroadcastTasks() {

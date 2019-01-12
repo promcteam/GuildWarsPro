@@ -18,8 +18,10 @@
 
 package co.marcin.novaguilds.command.admin;
 
+import co.marcin.novaguilds.api.storage.ResourceManager;
 import co.marcin.novaguilds.command.abstractexecutor.AbstractCommandExecutor;
 import co.marcin.novaguilds.enums.Message;
+import co.marcin.novaguilds.impl.basic.GuildVault;
 import co.marcin.novaguilds.listener.ControlPointListener;
 import co.marcin.novaguilds.util.LoggerUtils;
 import org.bukkit.command.CommandSender;
@@ -27,6 +29,8 @@ import org.bukkit.command.CommandSender;
 public class CommandAdminSave extends AbstractCommandExecutor {
 	@Override
 	public void execute(CommandSender sender, String[] args) throws Exception {
+		ResourceManager<GuildVault> resourceManagerVault = this.plugin.getStorage().getResourceManager(GuildVault.class);
+
 		if(args.length == 1) {
 			switch(args[0].toLowerCase()) {
 				case "players":
@@ -49,6 +53,10 @@ public class CommandAdminSave extends AbstractCommandExecutor {
 					Message.CHAT_ADMIN_SAVE_RANKS.send(sender);
 					LoggerUtils.info("Saved ranks");
 					break;
+				case "vault":
+					resourceManagerVault.executeSave();
+					resourceManagerVault.executeRemoval();
+					break;
 				default:
 					Message.CHAT_INVALIDPARAM.send(sender);
 					break;
@@ -60,6 +68,8 @@ public class CommandAdminSave extends AbstractCommandExecutor {
 			plugin.getPlayerManager().save();
 			plugin.getRankManager().save();
 			plugin.getListenerManager().getListener(ControlPointListener.class).save();
+			resourceManagerVault.executeSave();
+			resourceManagerVault.executeRemoval();
 			Message.CHAT_ADMIN_SAVE_ALL.send(sender);
 			LoggerUtils.info("Saved all data");
 		}

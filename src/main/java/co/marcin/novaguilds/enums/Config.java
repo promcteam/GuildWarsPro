@@ -124,6 +124,7 @@ public abstract class Config {
 	public static ConfigWrapper CLEANUP_STARTUPDELAY;
 	public static ConfigWrapper LEADERBOARD_GUILD_ROWS;
 	public static ConfigWrapper VAULT_ENABLED;
+	public static ConfigWrapper VAULT_SIZE;
 	public static ConfigWrapper VAULT_ITEM;
 	public static ConfigWrapper VAULT_HOLOGRAM_ENABLED;
 	public static ConfigWrapper VAULT_HOLOGRAM_LINES;

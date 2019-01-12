@@ -19,19 +19,27 @@
 package co.marcin.novaguilds.command;
 
 import co.marcin.novaguilds.api.basic.NovaGroup;
+import co.marcin.novaguilds.api.basic.NovaPlayer;
 import co.marcin.novaguilds.api.util.reflect.FieldAccessor;
 import co.marcin.novaguilds.command.abstractexecutor.AbstractCommandExecutor;
 import co.marcin.novaguilds.enums.Command;
 import co.marcin.novaguilds.enums.Config;
 import co.marcin.novaguilds.enums.Message;
 import co.marcin.novaguilds.impl.basic.NovaGroupImpl;
+import co.marcin.novaguilds.impl.storage.managers.database.ResourceManagerVaultImpl;
 import co.marcin.novaguilds.manager.GroupManager;
+import co.marcin.novaguilds.manager.PlayerManager;
 import co.marcin.novaguilds.util.StringUtils;
 import co.marcin.novaguilds.util.TabUtils;
 import co.marcin.novaguilds.util.TagUtils;
 import co.marcin.novaguilds.util.VersionUtils;
 import co.marcin.novaguilds.util.reflect.Reflections;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -111,6 +119,30 @@ public class CommandNovaGuilds extends AbstractCommandExecutor {
 			case "tr":
 				TabUtils.refresh();
 				TagUtils.refresh();
+				break;
+			case "vault":
+				NovaPlayer nPlayer = PlayerManager.getPlayer(sender);
+				nPlayer.getGuild().getVault().open(nPlayer.getPlayer());
+				break;
+			case "is":
+				Map<Integer, ItemStack> inventoryMap = new HashMap<>();
+				Player player = (Player)sender;
+
+				for (int i = 0; i < 36; i++) {
+					ItemStack item = player.getInventory().getItem(i);
+
+					if ((item != null) && (item.getType() != Material.AIR)) {
+						inventoryMap.put(i, item);
+					}
+				}
+
+				String string = ResourceManagerVaultImpl.serializeContent(inventoryMap);
+				Inventory inv = Bukkit.createInventory(null, 36, "Deserialized content");
+				for (Map.Entry<Integer, ItemStack> entry : ResourceManagerVaultImpl.deserializeContent(string).entrySet()) {
+					inv.setItem(entry.getKey(), entry.getValue());
+				}
+
+				((Player)sender).openInventory(inv);
 				break;
 			case "confirm":
 				Command.CONFIRM.execute(sender, args);

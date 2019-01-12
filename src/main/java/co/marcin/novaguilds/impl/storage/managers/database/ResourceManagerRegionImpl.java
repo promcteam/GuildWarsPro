@@ -24,6 +24,8 @@ import co.marcin.novaguilds.api.storage.Storage;
 import co.marcin.novaguilds.enums.Config;
 import co.marcin.novaguilds.enums.PreparedStatements;
 import co.marcin.novaguilds.impl.basic.NovaRegionImpl;
+import co.marcin.novaguilds.impl.basic.SiegeStone;
+import co.marcin.novaguilds.listener.SiegeStoneListener;
 import co.marcin.novaguilds.manager.GuildManager;
 import co.marcin.novaguilds.util.LoggerUtils;
 import co.marcin.novaguilds.util.RegionUtils;
@@ -77,7 +79,12 @@ public class ResourceManagerRegionImpl extends AbstractDatabaseResourceManager<N
 				NovaGuild guild;
 
 				try {
-					guild = GuildManager.getGuild(UUID.fromString(guildString));
+					UUID guildUUID = UUID.fromString(guildString);
+					guild = GuildManager.getGuild(guildUUID);
+
+					if(guild == null && guildUUID.equals(SiegeStoneListener.GUILD.getUUID())) {
+						guild = SiegeStoneListener.GUILD;
+					}
 				}
 				catch(IllegalArgumentException e) {
 					guild = GuildManager.getGuildByName(guildString);
@@ -175,6 +182,9 @@ public class ResourceManagerRegionImpl extends AbstractDatabaseResourceManager<N
 			preparedStatement.setString(5, region.getUUID().toString());            //region UUID
 			preparedStatement.executeUpdate();
 
+			//Siege stone
+			SiegeStoneListener.getInstance().getStorage().getResourceManager(SiegeStone.class).save(region.getSiegeStone());
+
 			region.setUnchanged();
 		}
 		catch(SQLException e) {
@@ -204,6 +214,9 @@ public class ResourceManagerRegionImpl extends AbstractDatabaseResourceManager<N
 			preparedStatement.setString(5, region.getWorld().getUID().toString());  //world uuid
 			preparedStatement.executeUpdate();
 
+			//Siege stone
+			SiegeStoneListener.getInstance().getStorage().getResourceManager(SiegeStone.class).save(region.getSiegeStone());
+
 			region.setId(getStorage().returnGeneratedKey(preparedStatement));
 			region.setUnchanged();
 			region.setAdded();
@@ -225,6 +238,7 @@ public class ResourceManagerRegionImpl extends AbstractDatabaseResourceManager<N
 			PreparedStatement preparedStatement = getStorage().getPreparedStatement(PreparedStatements.REGIONS_DELETE);
 			preparedStatement.setString(1, region.getUUID().toString());
 			preparedStatement.executeUpdate();
+			SiegeStoneListener.getInstance().getStorage().getResourceManager(SiegeStone.class).addToRemovalQueue(region.getSiegeStone());
 			return true;
 		}
 		catch(SQLException e) {

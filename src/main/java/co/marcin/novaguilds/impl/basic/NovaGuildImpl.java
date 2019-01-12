@@ -74,6 +74,7 @@ public class NovaGuildImpl extends AbstractResource implements NovaGuild {
 	private boolean friendlyPvp = false;
 	private Location vaultLocation;
 	private Hologram vaultHologram;
+	private GuildVault vault;
 	private final LoadingWrapper loadingWrapper;
 
 	private final List<NovaPlayer> players = new ArrayList<>();
@@ -207,6 +208,11 @@ public class NovaGuildImpl extends AbstractResource implements NovaGuild {
 	@Override
 	public Location getVaultLocation() {
 		return vaultLocation;
+	}
+
+	@Override
+	public GuildVault getVault() {
+		return vault;
 	}
 
 	@Override
@@ -359,6 +365,11 @@ public class NovaGuildImpl extends AbstractResource implements NovaGuild {
 	public void setVaultLocation(Location location) {
 		vaultLocation = location;
 		setChanged();
+	}
+
+	@Override
+	public void setVault(GuildVault vault) {
+		this.vault = vault;
 	}
 
 	@Override

@@ -130,7 +130,9 @@ public class ControlPoint extends AbstractResource implements ConfigurationSeria
             final List<NovaPlayer> list = new ArrayList<>();
 
             for(NovaPlayer nPlayer : getParticipants()) {
-                if(nPlayer.isOnline() && nPlayer.getPlayer().getLocation().distance(controlPoint.getLocation()) <= Config.CAVERSIA_CONTROLPOINT_RADIUS.getInt()) {
+                if(nPlayer.isOnline()
+                        && nPlayer.getPlayer().getWorld().equals(controlPoint.getLocation().getWorld())
+                        && nPlayer.getPlayer().getLocation().distance(controlPoint.getLocation()) <= Config.CAVERSIA_CONTROLPOINT_RADIUS.getInt()) {
                     list.add(nPlayer);
                 }
             }

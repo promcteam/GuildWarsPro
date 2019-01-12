@@ -79,6 +79,10 @@ public class MoveListener extends AbstractListener {
 		}
 
 		for(ControlPoint controlPoint : plugin.getListenerManager().getListener(ControlPointListener.class).getControlPoints()) {
+			if(!player.getLocation().getWorld().equals(controlPoint.getLocation().getWorld())) {
+				continue;
+			}
+
 			if(player.getLocation().distance(controlPoint.getLocation()) > Config.CAVERSIA_CONTROLPOINT_RADIUS.getInt()
 					|| (controlPoint.isRaid() && controlPoint.getRaid().getPlayersOccupying().contains(nPlayer))
 					|| !controlPoint.isVulnerable()) {
